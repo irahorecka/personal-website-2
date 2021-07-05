@@ -16,7 +16,7 @@ repos:
     rev: 3.9.2
     hooks:
     -   id: flake8
-        exclude: ^enrichment/__init__.py
+        exclude: ^irahorecka/__init__.py
 -   repo: https://github.com/codespell-project/codespell
     rev: v2.1.0
     hooks:

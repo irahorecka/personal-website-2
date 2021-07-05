@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-<!-- Why hello there, Mrs. SneakyPants ಠ‿ಠ -->
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
@@ -9,31 +8,41 @@
       name='viewport'
       content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
   />
-  <link rel="stylesheet" href="{{ url_for('static', filename='external/bootstrap-4.4.1/css/bootstrap.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='external/mvp.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='latolatinfonts.css') }}">
-  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-  <link class="img-fluid rounded-circle float-left mr-2" rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='images/personalis.png') }}">
-  <script src="{{ url_for('static', filename="/external/jquery-3.5.1.min.js") }}"></script>
-  <script defer src="{{ url_for('static', filename="/external/bootstrap-4.4.1/js/bootstrap.min.js") }}"></script>
+  {% assets 'css' %}
+    <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {% endassets %}
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script src="{{ url_for('static', filename="external/jquery-3.5.1.min.js") }}"></script>
+  <script defer src="{{ url_for('static', filename="external/headroom-0.9.4.js") }}"></script>
+  <script defer src="{{ url_for('static', filename="js/nav.js") }}"></script>
   <title>{{ title }}</title>
 </head>
-<body>
-  <header>
-      <nav>
-        Nav
-      </nav>
+<body class="bg-blue-100 flex flex-col">
+  <header class="header header--fixed" role="banner">
+    <nav class="site-nav site-header">
+      <div class="nav-left">
+        <a href="/" class="title">irahorecka.com</a>
+      </div>
+      <div class="nav-right">
+        <a href="/">home</a>
+        <a href="/api">api</a>
+        <a href="/projects">projects</a>
+        <a href="/about">about</a>
+        <a href="javascript:void(0);" class="nav-toggle">☰</a>
+      </div>
+    </nav>
   </header>
-  <main>
+    <main>
 
-    {%- block content -%}
-    {%- endblock content -%}
+      {%- block content -%}
+      {%- endblock content -%}
 
-  </main>
-  <footer>
-    <p>
-      <small>Made with ❤️ by the Personalis Automation Team</small>
-    </p>
-  </footer>
+    </main>
+    <footer class="site-footer">
+      <p>
+        <small>Made with ❤️ by Ira Horecka</small>
+      </p>
+    </footer>
 </body>
 </html>

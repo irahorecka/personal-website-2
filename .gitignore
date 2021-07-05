@@ -10,7 +10,7 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+# Don't add dist - static/dist required for CSS transpiling
 downloads/
 eggs/
 .eggs/

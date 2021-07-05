@@ -5,8 +5,11 @@ black: ## Black format every python file to line length 100
 flake: ## Flake8 every python file
 	find . -type f -name "*.py" -a | xargs flake8;
 
-pylint: ## pylint every python file
+pylint: ## Pylint every python file
 	find . -type f -name "*.py" -a | xargs pylint;
+
+postcss: ## Apply postcss to irahorecka/static/src/main.css to irahorecka/static/dist/main.css
+	postcss irahorecka/static/src/main.css -o irahorecka/static/dist/main.css
 
 pre-commit: ## Install and autoupdate pre-commit
 	pre-commit install;
