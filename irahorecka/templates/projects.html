@@ -10,6 +10,16 @@
          <h2 class="mb-4"><a class="font-medium leading-8 text-2xl md:leading-10 md:text-4xl" href="{{ project.url }}" rel="noopener noreferrer" target="_blank">{{ project.name }}</a></h2>
          <p class="flex-grow leading-7 mb-4 text-gray-600 text-lg md:leading-7 md:mb6 md:text-xl">{{ project.description }}</p>
          <ul class="flex flex-wrap leading-7 text-gray-500 text-sm md:leading-7">
+            <li class="inline-flex mr-2 md:mr-3">
+               <span class="iconify github-stars github-icon" data-icon="octicon:star-16" data-inline="true"></span>
+               {{ project.stars }}
+            </li>
+            <li class="inline-flex mr-2 md:mr-3">
+               <span class="iconify github-forks github-icon" data-icon="octicon:repo-forked-16" data-inline="true"></span>
+               {{ project.forks }}
+            </li>
+         </ul>
+         <ul class="flex flex-wrap leading-7 text-gray-500 text-sm md:leading-7">
          {% for lang in project.languages %}
             <li class="language mr-3" style="--lang-color: {{ lang.color }}">{{ lang.name }}</li>
          {% endfor %}

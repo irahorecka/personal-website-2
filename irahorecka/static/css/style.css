@@ -9,6 +9,22 @@ body {
 
 /*===== START Main =====*/
 
+/* For `.github-*` view irahorecka/templates/projects.html */
+.github-stars {
+    content: url('https://api.iconify.design/octicon:star-16.svg?height=16');
+}
+
+.github-forks {
+    content: url('https://api.iconify.design/octicon:repo-forked-16.svg?height=16');
+}
+
+.github-icon {
+    vertical-align: -0.125em;
+    margin-top: 5.6px;
+    margin-left: -1px;
+    margin-right: 4px;
+}
+
 /*===== END Main =====*/
 
 /*===== START Footer =====*/

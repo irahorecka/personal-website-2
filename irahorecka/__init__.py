@@ -6,15 +6,15 @@ Ira Horecka - June 2021
 #
 """
 
-import os
 import yaml
+from pathlib import Path
 
 from flask import Flask
 from flask_assets import Bundle, Environment
 
-ROOT_PATH = os.path.dirname(os.path.abspath(os.path.join(__file__, os.pardir)))
-MODULE_PATH = os.path.dirname(os.path.abspath(__file__))
-with open(os.path.join(ROOT_PATH, "config.yaml"), "r") as config:
+ROOT_PATH = Path(__file__).absolute().parent.parent
+MODULE_PATH = Path(__file__).absolute().parent
+with open(ROOT_PATH.joinpath('config.yaml'), "r") as config:
     CONFIG = yaml.safe_load(config)
 
 

@@ -17,12 +17,13 @@ JSON content:
 
 import concurrent.futures
 import json
-import os
+from pathlib import Path
 
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
-JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out.json")
+CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath('config.yaml')
+JSON_PATH = Path(__file__).absolute().parent.joinpath('out.json')
 LANGUAGE_COLOR = {
     "python": "#3672a5",
     "css": "#563d7c",
