@@ -1,0 +1,8 @@
+# Local IP address to host web app - use 127.0.0.1 as default
+local-ip: 127.0.0.1
+
+# Port number to host web app - use 5000 as default
+port: 5000
+
+# Indicate whether to run web app in debug mode
+debug: true
