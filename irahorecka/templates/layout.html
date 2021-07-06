@@ -9,11 +9,13 @@
       content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'
   />
   <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-cards.css') }}">
-  {% assets 'css' %}
-    <link rel="stylesheet" href="{{ ASSET_URL }}">
-  {% endassets %}
+  {% assets 'css' -%}
+  <link rel="stylesheet" href="{{ ASSET_URL }}">
+  {%- endassets %}
   <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
   <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  {% block style -%}
+  {%- endblock style %}
   <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
   <script src="{{ url_for('static', filename="external/jquery-3.5.1.min.js") }}"></script>
   <script defer src="{{ url_for('static', filename="external/headroom-0.9.4.js") }}"></script>
