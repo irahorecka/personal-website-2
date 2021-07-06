@@ -23,6 +23,22 @@ from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
 JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out.json")
+LANGUAGE_COLOR = {
+    "python": "#3672a5",
+    "css": "#563d7c",
+    "html": "#e34c26",
+    "javascript": "#f1e05a",
+    "makefile": "#427819",
+    "c++": "#f34b7d",
+    "jupyter notebook": "#da5b0b",
+    "r": "#198ce7",
+    "ruby": "#701516",
+    "swift": "#ffac44",
+    "racket": "#3d5caa",
+    "rich text format": "#f6f8fa",
+    "shell": "#89e051",
+    "batchfile": "#c1f12e",
+}
 
 
 def write_repos(access_token):
@@ -41,7 +57,7 @@ def write_repos(access_token):
 
 def build_repos_json(repos):
     """Get projects' name and information as a dictionary."""
-    return {proj: info for repo in map_threads(build_repo_json, repos) for proj, info in repo.items()}
+    return list(map_threads(build_repo_json, repos))
 
 
 def map_threads(func, _iterable):
@@ -53,18 +69,19 @@ def map_threads(func, _iterable):
 
 def build_repo_json(repo):
     return {
-        repo.full_name.split("/")[-1]: {
-            "description": repo.description,
-            "license": validate_gh_method(repo.get_license).license.name
-            if validate_gh_method(repo.get_license) != ""
-            else "",
-            "private": repo.private,
-            "stars": repo.stargazers_count,
-            "forks": repo.forks_count,
-            "commits": len(list(validate_gh_method(repo.get_commits))),
-            "open_issues": repo.open_issues_count,
-            "languages": validate_gh_method(repo.get_languages),
-        }
+        "name": repo.full_name.split("/")[-1],
+        "full_name": repo.full_name,
+        "description": repo.description,
+        "license": validate_gh_method(repo.get_license).license.name
+        if validate_gh_method(repo.get_license) != ""
+        else "",
+        "private": repo.private,
+        "stars": repo.stargazers_count,
+        "forks": repo.forks_count,
+        "commits": len(list(validate_gh_method(repo.get_commits))),
+        "open_issues": repo.open_issues_count,
+        "languages": validate_gh_method(get_languages, repo) if validate_gh_method(get_languages, repo) != "" else "",
+        "url": f"https://github.com/{repo.full_name}",
     }
 
 
@@ -73,6 +90,12 @@ def validate_gh_method(method, *args, **kwargs):
         return method(*args, **kwargs)
     except UnknownObjectException:
         return ""
+
+
+def get_languages(repo):
+    """Returns language color as seen on GitHub."""
+    languages = repo.get_languages()
+    return [{"name": lang, "color": LANGUAGE_COLOR.get(lang.lower(), "#ffffff")} for lang in languages]
 
 
 def write_json(data, output_path):

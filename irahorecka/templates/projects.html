@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+<ul class="flex flex-wrap py-8">
+{% for project in projects %}
+   <li class="py-2 w-full md:even:pl-6 md:odd:pr-6 md:py-6 md:w-1/2">
+      <article class="bg-white duration-300 flex flex-col flex-wrap h-full p-4 rounded-lg shadow-xl transform transition hover:scale-105 hover:shadow-2xl md:p-6">
+         <h2 class="mb-4"><a class="font-medium leading-8 text-2xl md:leading-10 md:text-4xl" href="{{ project.url }}" rel="noopener noreferrer" target="_blank">{{ project.name }}</a></h2>
+         <p class="flex-grow leading-7 mb-4 text-gray-600 text-lg md:leading-7 md:mb6 md:text-xl">{{ project.description }}</p>
+         <ul class="flex flex-wrap leading-7 text-gray-500 text-sm md:leading-7">
+         {% for lang in project.languages %}
+            <li class="language mr-3" style="--lang-color: {{ lang.color }}">{{ lang.name }}</li>
+         {% endfor %}
+         </ul>
+      </article>
+   </li>
+{% endfor %}
+</ul>
+
+{% endblock content %}

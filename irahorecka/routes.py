@@ -9,7 +9,7 @@ Ira Horecka - June 2021
 from flask import render_template
 
 from irahorecka import app
-from irahorecka.python import get_header, get_content
+from irahorecka.python import get_header, get_content, read_repos
 
 
 @app.route("/")
@@ -38,10 +38,11 @@ def api():
 def projects():
     """GitHub projects page of personal website."""
     return render_template(
-        "home.html",
+        "projects.html",
         title="Ira Horecka | Projects",
         header=get_header("projects"),
         content=get_content("projects"),
+        projects=read_repos(),
     )
 
 
