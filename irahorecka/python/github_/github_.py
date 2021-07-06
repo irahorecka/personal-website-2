@@ -25,7 +25,7 @@ from github.GithubException import RateLimitExceededException, UnknownObjectExce
 JSON_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "out.json")
 
 
-def write_user_repos(access_token):
+def write_repos(access_token):
     """Entry point function to write GitHub user's repos (via access token)
     to `JSON_PATH`."""
     try:

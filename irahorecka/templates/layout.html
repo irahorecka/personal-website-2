@@ -18,30 +18,37 @@
   <script defer src="{{ url_for('static', filename="js/nav.js") }}"></script>
   <title>{{ title }}</title>
 </head>
-<body class="bg-blue-100 flex flex-col">
+<body class="bg-white-100 font-sans">
   <header class="header header--fixed" role="banner">
-    <nav class="site-nav site-header">
+    <nav class="site-nav site-header max-w-7xl m-auto">
       <div class="nav-left">
-        <a href="/" class="title">irahorecka.com</a>
+        <a href="/" class="title hover:text-yellow-600">irahorecka.com</a>
       </div>
       <div class="nav-right">
-        <a href="/">home</a>
-        <a href="/api">api</a>
-        <a href="/projects">projects</a>
-        <a href="/about">about</a>
+        <a href="/" class="hover:text-yellow-600">home</a>
+        <a href="/api" class="hover:text-yellow-600">api</a>
+        <a href="/projects" class="hover:text-yellow-600">projects</a>
+        <a href="/about" class="hover:text-yellow-600">about</a>
         <a href="javascript:void(0);" class="nav-toggle">☰</a>
       </div>
     </nav>
   </header>
-    <main>
+      <div class="container px-8 pt-8 pb-16 mt-0 lg:mt-16 flex flex-col md:flex-row m-auto">
+        <div class="flex flex-wrap content-between w-32 md:w-48 mt-0 md:mr-16">
+            <img src="{{ url_for('static', filename='images/profile.png') }}" class="w-full h-32 xl:h-48 rounded-full shadow-lg">
+        </div>
+        <div class="flex flex-col blog max-w-3xl">
+            <h1 class="font-extrabold tracking-tight text-gray-900 text-4xl mt-6 lg:mt-0 sm:text-5xl lg:text-6xl">{{ header }}</h1>
+            <p class="mt-6 text-xl leading-8 text-gray-500">{{ content }}</p>
 
-      {%- block content -%}
-      {%- endblock content -%}
+            {%- block content -%}
+            {%- endblock content -%}
 
-    </main>
+        </div>
+      </div>
     <footer class="site-footer">
       <p>
-        <small>Made with ❤️ by Ira Horecka</small>
+        <!-- <small>Made with ❤️ by Ira Horecka</small> -->
       </p>
     </footer>
 </body>
