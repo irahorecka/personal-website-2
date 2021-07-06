@@ -9,7 +9,7 @@ def get_age():
 CONTENT = {
     "home": {
         "header": "Ira Horecka",
-        "content": "Lab Automation Engineer and programming enthusiast. I specialize in biochemistry, Python and web programming, and bass fishing.",
+        "content": "Lab Automation Engineer and programming enthusiast.",
     },
     "api": {
         "header": "API time",
@@ -21,7 +21,7 @@ CONTENT = {
     },
     "about": {
         "header": "About me",
-        "content": f"Hello, I'm Ira. I'm {get_age()} years old and will start my PhD program at the University of Toronto in Fall 2021.",
+        "content": f"Hello, I'm Ira. I'm {get_age()} and will study at the University of Toronto in Fall 2021.",
     },
 }
 
