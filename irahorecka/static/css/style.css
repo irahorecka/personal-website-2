@@ -10,6 +10,12 @@ body {
 /*===== START Main =====*/
 
 /* For `.github-*` view irahorecka/templates/projects.html */
+a.github-link:active,
+a.github-link:focus {
+    color: #000000;
+    opacity: 1;
+}
+
 .github-stars {
     content: url('https://api.iconify.design/octicon:star-16.svg?height=16');
 }
