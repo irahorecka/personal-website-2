@@ -50,14 +50,9 @@ def write_repos(access_token):
         # Throttled access to GitHub's API
         return 1
     repos = user.get_repos()
-    project_json = build_repos_json(repos)
-    write_json(project_json, JSON_PATH)
+    repos_dict = list(map_threads(build_repo_dict, repos))
+    write_json(repos_dict, JSON_PATH)
     return 0
-
-
-def build_repos_json(repos):
-    """Get projects' name and information as a dictionary."""
-    return list(map_threads(build_repo_json, repos))
 
 
 def map_threads(func, _iterable):
@@ -67,7 +62,8 @@ def map_threads(func, _iterable):
     return result
 
 
-def build_repo_json(repo):
+def build_repo_dict(repo):
+    """Isolates desired properties of a GitHub repository."""
     return {
         "name": repo.full_name.split("/")[-1],
         "full_name": repo.full_name,
@@ -86,6 +82,8 @@ def build_repo_json(repo):
 
 
 def validate_gh_method(method, *args, **kwargs):
+    """Wrapper that will return an empty string if PyGithub method
+    raises an exception."""
     try:
         return method(*args, **kwargs)
     except UnknownObjectException:
