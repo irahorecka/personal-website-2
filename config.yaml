@@ -6,3 +6,7 @@ port: 5000
 
 # Indicate whether to run web app in debug mode
 debug: true
+
+# GitHub properties to display in /projects page
+github:
+  repos: ['pycraigslist', 'youtube2audio', 'visuaudio', 'actransit-map', 'jupyterblack', 'astree', 'img-optimize', 'soil-moisture-display', 'personal-website-1', 'personal-website-2']

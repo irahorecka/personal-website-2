@@ -17,12 +17,16 @@ JSON content:
 
 import concurrent.futures
 import json
+import yaml
 from pathlib import Path
 
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
+
 CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath('config.yaml')
+with open(CONFIG_PATH, "r") as config:
+    CONFIG_GITHUB = yaml.safe_load(config)['github']
 JSON_PATH = Path(__file__).absolute().parent.joinpath('out.json')
 LANGUAGE_COLOR = {
     "python": "#3672a5",
@@ -51,8 +55,12 @@ def write_repos(access_token):
         # Throttled access to GitHub's API
         return 1
     repos = user.get_repos()
-    repos_dict = list(map_threads(build_repo_dict, repos))
-    write_json(repos_dict, JSON_PATH)
+    repos_dict = {repo['name']: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
+    # Sort `repos_dict` in order as it would appear in `CONFIG_GITHUB["repos"]`
+    index_map = {repo_name: idx for idx, repo_name in enumerate(CONFIG_GITHUB["repos"])}
+    # Build and write a list of repositories to JSON
+    repos_list = [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
+    write_json(repos_list, JSON_PATH)
     return 0
 
 
@@ -65,6 +73,9 @@ def map_threads(func, _iterable):
 
 def build_repo_dict(repo):
     """Isolates desired properties of a GitHub repository."""
+    repo_name = repo.full_name.split("/")[-1]
+    if repo_name not in CONFIG_GITHUB["repos"]:
+        return None
     return {
         "name": repo.full_name.split("/")[-1],
         "full_name": repo.full_name,
