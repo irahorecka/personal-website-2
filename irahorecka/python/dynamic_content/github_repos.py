@@ -27,7 +27,7 @@ from github.GithubException import RateLimitExceededException, UnknownObjectExce
 CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath("config.yaml")
 with open(CONFIG_PATH, "r") as config:
     GITHUB_REPOS = yaml.safe_load(config)["github-repos"]
-JSON_PATH = Path(__file__).absolute().parent.joinpath("out.json")
+JSON_PATH = Path(__file__).absolute().parent.joinpath("github-repos.json")
 LANGUAGE_COLOR = {
     "python": "#3672a5",
     "css": "#563d7c",
@@ -46,7 +46,7 @@ LANGUAGE_COLOR = {
 }
 
 
-def write_repos(access_token):
+def write_github_repos(access_token):
     """Entry point function to write GitHub user's repos (via access token)
     to `JSON_PATH`. Returns exit code 0 if success, 1 if failure."""
     try:

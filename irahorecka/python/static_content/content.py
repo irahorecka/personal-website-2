@@ -23,11 +23,11 @@ CONTENT = {
 }
 
 
-def get_header(key):
+def get_header_text(key):
     """Gets header value from `content` given a valid key."""
     return CONTENT[key]["header"]
 
 
-def get_body(key):
+def get_body_text(key):
     """Gets body value from `body` given a valid key."""
     return CONTENT[key]["body"]
