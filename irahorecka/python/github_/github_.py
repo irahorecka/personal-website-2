@@ -24,10 +24,10 @@ from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
 
-CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath('config.yaml')
+CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath("config.yaml")
 with open(CONFIG_PATH, "r") as config:
-    CONFIG_GITHUB = yaml.safe_load(config)['github']
-JSON_PATH = Path(__file__).absolute().parent.joinpath('out.json')
+    CONFIG_GITHUB = yaml.safe_load(config)["github"]
+JSON_PATH = Path(__file__).absolute().parent.joinpath("out.json")
 LANGUAGE_COLOR = {
     "python": "#3672a5",
     "css": "#563d7c",
@@ -55,7 +55,7 @@ def write_repos(access_token):
         # Throttled access to GitHub's API
         return 1
     repos = user.get_repos()
-    repos_dict = {repo['name']: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
+    repos_dict = {repo["name"]: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
     # Sort `repos_dict` in order as it would appear in `CONFIG_GITHUB["repos"]`
     index_map = {repo_name: idx for idx, repo_name in enumerate(CONFIG_GITHUB["repos"])}
     # Build and write a list of repositories to JSON

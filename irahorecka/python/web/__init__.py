@@ -1,1 +1,1 @@
-from irahorecka.python.web.content import get_content, get_header
+from irahorecka.python.web.content import get_body, get_header

@@ -14,7 +14,7 @@ from flask_assets import Bundle, Environment
 
 ROOT_PATH = Path(__file__).absolute().parent.parent
 MODULE_PATH = Path(__file__).absolute().parent
-with open(ROOT_PATH.joinpath('config.yaml'), "r") as config:
+with open(ROOT_PATH.joinpath("config.yaml"), "r") as config:
     CONFIG = yaml.safe_load(config)
 
 
