@@ -56,18 +56,3 @@ def projects():
         "projects.html",
         content=content,
     )
-
-
-@app.route("/about")
-def about():
-    """About page of personal website."""
-    content = {
-        "title": "Ira Horecka | About",
-        "profile_img": "profile.png",
-        "header": get_header("about"),
-        "body": get_body("about"),
-    }
-    return render_template(
-        "home.html",
-        content=content,
-    )

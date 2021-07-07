@@ -1,15 +1,12 @@
-from datetime import datetime
-
-
-def _get_age():
-    """Gets my age in years."""
-    return int(divmod((datetime.now() - datetime(1994, 5, 10)).total_seconds(), 31536000)[0])
-
-
 CONTENT = {
     "home": {
-        "header": {"first": "Ira Horecka"},
-        "body": {"first": "Lab Automation Engineer and programming enthusiast."},
+        "header": {"first": "Ira Horecka", "second": "What the heck do I do?"},
+        "body": {
+            "first": "Hello, I'm Ira. I enjoy programming and will join the University of Toronto this fall to study computational biology as a PhD candidate.",
+            "second": "I live in Mountain View, CA and work as a lab automation engineer. I have an educational background in biochemistry & molecular biology. I started programming almost 3 years ago and have enjoyed it since.",
+            "third": 'There was a period in time when I worked as a research associate (RA) at pharmaceutical firms. I always wondered, "How do I break out of the RA title? Did I study a rigorous curriculum to become adept at pipetting?" Before I delve further, I do not intend to undermine RAs, as the career is fulfilling in its own light.',
+            "fourth": "My twin brother is a software engineer and he encouraged me to take up programming, so I did. I eventually managed to break out of the RA title and moved on to become a lab automation engineer, programming liquid handlers to automate repetitive laboratory procedures. I strive to go beyond programming robots, which is why I'm pursuing a higher education in computational biology - to merge my academic background with my passion in programming.",
+        },
     },
     "api": {
         "header": {"first": "API time"},
@@ -20,13 +17,7 @@ CONTENT = {
     "projects": {
         "header": {"first": "Programming projects"},
         "body": {
-            "first": "I'm a self-taught programmer and I really dig it! I am most comfortable with Python and web programming (HTML/CSS/JS)."
-        },
-    },
-    "about": {
-        "header": {"first": "About me"},
-        "body": {
-            "first": f"Hello, I'm Ira. I'm {_get_age()} and will study at the University of Toronto in Fall 2021."
+            "first": "I'm a self-taught programmer and I dig it. I'm most comfortable with Python and web programming (HTML/CSS/JS)."
         },
     },
 }

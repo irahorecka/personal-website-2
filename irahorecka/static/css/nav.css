@@ -192,12 +192,11 @@ header {
   }
 }
 
-
 @media screen and (max-width: 768px) {
   .site-header.responsive {
     position: relative;
-    /* min-height is hard-coded. Adjust if you add new navbar links */
-    min-height: 284px;
+    /* `min-height` is hard-coded. Adjust if you add new navbar links */
+    min-height: 229px;
   }
   .site-header.responsive a.nav-toggle {
     position: absolute;
