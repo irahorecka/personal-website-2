@@ -37,7 +37,7 @@ def api():
         "body": get_body("api"),
     }
     return render_template(
-        "layout.html",
+        "api.html",
         content=content,
     )
 
