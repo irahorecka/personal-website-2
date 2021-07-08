@@ -9,7 +9,7 @@ Ira Horecka - June 2021
 from flask import render_template
 
 from irahorecka import app
-from irahorecka.python import get_header, get_body, read_repos
+from irahorecka.python import get_header_text, get_body_text, get_gallery_imgs, read_github_repos
 
 
 @app.route("/")
@@ -18,8 +18,9 @@ def home():
     content = {
         "title": "Ira Horecka | Home",
         "profile_img": "profile.png",
-        "header": get_header("home"),  # Use Jinja syntax s/a `content.header.first`, `content.header.second`, etc.
-        "body": get_body("home"),  # Use Jinja syntax s/a `content.body.first`, `content.body.second`, etc.
+        "header": get_header_text("home"),  # Use Jinja syntax s/a `content.header.first`, `content.header.second`, etc.
+        "body": get_body_text("home"),  # Use Jinja syntax s/a `content.body.first`, `content.body.second`, etc.
+        "images": get_gallery_imgs(),
     }
     return render_template(
         "home.html",
@@ -33,8 +34,8 @@ def api():
     content = {
         "title": "Ira Horecka | API",
         "profile_img": "me_arrow.png",
-        "header": get_header("api"),
-        "body": get_body("api"),
+        "header": get_header_text("api"),
+        "body": get_body_text("api"),
     }
     return render_template(
         "api.html",
@@ -48,9 +49,9 @@ def projects():
     content = {
         "title": "Ira Horecka | API",
         "profile_img": "me_computing.png",
-        "header": get_header("projects"),
-        "body": get_body("projects"),
-        "repos": read_repos(),
+        "header": get_header_text("projects"),
+        "body": get_body_text("projects"),
+        "repos": read_github_repos(),
     }
     return render_template(
         "projects.html",

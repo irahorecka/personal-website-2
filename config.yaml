@@ -1,5 +1,5 @@
 # Local IP address to host web app - use 127.0.0.1 as default
-local-ip: 10.0.0.30
+local-ip: 10.20.12.173
 
 # Port number to host web app - use 5000 as default
 port: 5000
