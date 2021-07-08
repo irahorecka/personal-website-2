@@ -56,9 +56,8 @@ def write_repos(access_token):
         return 1
     repos = user.get_repos()
     repos_dict = {repo["name"]: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
-    # Sort `repos_dict` in order as it would appear in `GITHUB_REPOS`
+    # Write a list of repositories in `GITHUB_REPOS` (in the order they appear) to JSON
     index_map = {repo_name: idx for idx, repo_name in enumerate(GITHUB_REPOS)}
-    # Build and write a list of repositories to JSON
     repos_list = [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
     write_json(repos_list, JSON_PATH)
     return 0
