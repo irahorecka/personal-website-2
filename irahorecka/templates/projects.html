@@ -1,11 +1,10 @@
 {% extends "layout.html" %}
-
 {% block content %}
 <p class="mt-6 text-xl leading-8 text-gray-500">Below are some of my public repositories on
    <a href="https://github.com/irahorecka" target="_blank" rel="noreferrer noopener" class="text-yellow-600 hover:text-yellow-900">GitHub</a>:
 </p>
 <ul class="flex flex-wrap py-8">
-{%- for repo in content.repos %}
+   {%- for repo in content.repos %}
    <li class="py-2 w-full md:even:pl-6 md:odd:pr-6 md:py-6 md:w-1/2">
       <article class="bg-white duration-300 flex flex-col flex-wrap h-full p-4 rounded-lg shadow-xl transform transition hover:scale-105 hover:shadow-2xl md:p-6">
          <h2 class="mb-4"><a class="github-link font-medium leading-8 text-2xl md:leading-10 md:text-4xl text-black hover:text-yellow-600" href="{{ repo.url }}" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ repo.name }}</a></h2>
@@ -21,12 +20,12 @@
             </li>
          </ul>
          <ul class="flex flex-wrap leading-7 text-gray-500 text-sm md:leading-7">
-         {%- for lang in repo.languages %}
+            {%- for lang in repo.languages %}
             <li class="language mr-3" style="--lang-color: {{ lang.color }}">{{ lang.name }}</li>
-         {%- endfor %}
+            {%- endfor %}
          </ul>
       </article>
    </li>
-{%- endfor %}
+   {%- endfor %}
 </ul>
 {% endblock content %}
