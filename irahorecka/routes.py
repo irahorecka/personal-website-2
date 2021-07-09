@@ -6,7 +6,7 @@ Ira Horecka - June 2021
 #
 """
 
-from flask import render_template
+from flask import render_template, jsonify
 
 from irahorecka import app
 from irahorecka.python import get_header_text, get_body_text, get_gallery_imgs, read_github_repos
@@ -22,10 +22,13 @@ def home():
         "body": get_body_text("home"),  # Use Jinja syntax s/a `content.body.first`, `content.body.second`, etc.
         "images": get_gallery_imgs(),
     }
-    return render_template(
-        "home.html",
-        content=content,
-    )
+    return render_template("home.html", content=content)
+
+
+@app.route("/", subdomain="api")
+def rest_home():
+    """REST-like API of personal website."""
+    return jsonify(read_github_repos())
 
 
 @app.route("/api")
@@ -37,10 +40,7 @@ def api():
         "header": get_header_text("api"),
         "body": get_body_text("api"),
     }
-    return render_template(
-        "api.html",
-        content=content,
-    )
+    return render_template("api.html", content=content)
 
 
 @app.route("/projects")
@@ -53,7 +53,4 @@ def projects():
         "body": get_body_text("projects"),
         "repos": read_github_repos(),
     }
-    return render_template(
-        "projects.html",
-        content=content,
-    )
+    return render_template("projects.html", content=content)

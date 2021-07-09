@@ -1,6 +1,9 @@
-# Local IP address to host web app - use 127.0.0.1 as default
+# Indicates whether to host application purely locally - this allows for use of subdomains
+localhost: true
+
+# Local IP address to host web app
 local-ip:
-  mac: 10.0.0.30
+  mac: 127.0.0.1
   win: 10.20.12.173
 
 # Port number to host web app - use 5000 as default
