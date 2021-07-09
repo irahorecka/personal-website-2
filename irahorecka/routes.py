@@ -26,7 +26,7 @@ def home():
 
 
 @app.route("/", subdomain="api")
-def rest_home():
+def rest_api():
     """REST-like API of personal website."""
     return jsonify(read_github_repos())
 

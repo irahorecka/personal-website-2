@@ -1,7 +1,7 @@
 from functools import reduce
 from pathlib import Path
 
-GALLERY_PATH = Path(__file__).absolute().parent.parent.parent.joinpath("static").joinpath("images").joinpath("gallery")
+GALLERY_PATH = Path(__file__).absolute().parent.parent.parent / "static" / "images" / "gallery"
 
 
 def get_gallery_imgs():

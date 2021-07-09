@@ -24,10 +24,10 @@ from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
 
-CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent.joinpath("config.yaml")
+CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent / "config.yaml"
 with open(CONFIG_PATH, "r") as config:
     GITHUB_REPOS = yaml.safe_load(config)["github-repos"]
-JSON_PATH = Path(__file__).absolute().parent.joinpath("github-repos.json")
+GITHUB_JSON_PATH = Path(__file__).absolute().parent.parent.parent / "static" / "data" / "github_repos.json"
 LANGUAGE_COLOR = {
     "python": "#3672a5",
     "css": "#563d7c",
@@ -48,7 +48,7 @@ LANGUAGE_COLOR = {
 
 def write_github_repos(access_token):
     """Entry point function to write GitHub user's repos (via access token)
-    to `JSON_PATH`. Returns exit code 0 if success, 1 if failure."""
+    to `GITHUB_JSON_PATH`. Returns exit code 0 if success, 1 if failure."""
     try:
         user = Github(access_token).get_user()
     except RateLimitExceededException:
@@ -59,7 +59,7 @@ def write_github_repos(access_token):
     # Write a list of repositories in `GITHUB_REPOS` (in the order they appear) to JSON
     index_map = {repo_name: idx for idx, repo_name in enumerate(GITHUB_REPOS)}
     repos_list = [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
-    write_json(repos_list, JSON_PATH)
+    write_json(repos_list, GITHUB_JSON_PATH)
     return 0
 
 
