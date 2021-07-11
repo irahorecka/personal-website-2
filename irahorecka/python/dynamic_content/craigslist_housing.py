@@ -8,9 +8,9 @@ Get zip codes for alameda, contra costa, santa clara, san francisco, santa cruz,
 NOTE: eventually, we want to transition data storage and fetching from a database
 """
 
-import json
-
 import pycraigslist
+
+from irahorecka.models import CraigslistHousing
 
 
 def yield_apa_filters():
@@ -23,7 +23,7 @@ def yield_apa_filters():
     ]
 
 
-def yield_pycraigslist_apa():
+def yield_sfbay_apa():
     sfbay_areas = ["eby", "nby", "sby", "sfc", "pen", "scz"]
     yield from [
         pycraigslist.housing.apa(site="sfbay", area=area, filters=query_filter)
@@ -32,19 +32,16 @@ def yield_pycraigslist_apa():
     ]
 
 
-def write_json(data, output_path):
-    """Writes dictionary to JSON file."""
-    with open(output_path, "w") as file:
-        json.dump(data, file)
+def fetch_craigslist_housing():
+    sfbay_housing = []
+    post_id_ref = []
+    for apa in yield_sfbay_apa():
+        for post in apa.search_detail():
+            post_id = int(post["id"])
+            # Performs checks to ensure no duplication of posts in database
+            if post_id in post_id_ref or CraigslistHousing.query.get(post_id):
+                continue
+            post_id_ref.append(post_id)
+            sfbay_housing.append(post)
 
-
-sfbay_housing = []
-id_ref = []
-for apa in yield_pycraigslist_apa():
-    for post in apa.search_detail():
-        if post["id"] in id_ref:
-            continue
-        id_ref.append(post["id"])
-        sfbay_housing.append(post)
-
-write_json(sfbay_housing, "sfbay_housing.json")
+    return sfbay_housing
