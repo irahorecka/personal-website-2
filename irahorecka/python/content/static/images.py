@@ -1,4 +1,4 @@
-from irahorecka.python.static_content.config import GALLERY_PATH
+from irahorecka.python.content.config import GALLERY_PATH
 
 
 def get_gallery_imgs():

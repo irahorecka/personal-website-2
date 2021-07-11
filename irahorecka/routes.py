@@ -9,7 +9,13 @@ Ira Horecka - June 2021
 from flask import render_template, jsonify
 
 from irahorecka import app
-from irahorecka.python import get_header_text, get_body_text, get_gallery_imgs, read_github_repos
+from irahorecka.python import (
+    get_header_text,
+    get_body_text,
+    get_gallery_imgs,
+    read_github_repos,
+    read_craigslist_housing,
+)
 
 
 @app.route("/")
@@ -28,7 +34,7 @@ def home():
 @app.route("/", subdomain="api")
 def rest_api():
     """REST-like API of personal website."""
-    return jsonify(read_github_repos())
+    return jsonify(list(read_craigslist_housing(limit=1000)))
 
 
 @app.route("/api")

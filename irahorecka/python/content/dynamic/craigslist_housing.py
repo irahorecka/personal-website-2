@@ -32,7 +32,7 @@ def yield_sfbay_apa():
     ]
 
 
-def fetch_craigslist_housing():
+def fetch_sfbay_housing():
     sfbay_housing = []
     post_id_ref = []
     for apa in yield_sfbay_apa():

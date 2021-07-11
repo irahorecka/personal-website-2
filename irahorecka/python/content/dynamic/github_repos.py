@@ -21,7 +21,7 @@ import json
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
-from irahorecka.python.dynamic_content.config import GITHUB_REPOS
+from irahorecka.python.content.config import GITHUB_REPOS
 
 LANGUAGE_COLOR = {
     "python": "#3672a5",
@@ -41,7 +41,7 @@ LANGUAGE_COLOR = {
 }
 
 
-def fetch_github_repos(access_token):
+def fetch_repos(access_token):
     """Entry point function to fetch GitHub user's repos (via access token)."""
     try:
         user = Github(access_token).get_user()

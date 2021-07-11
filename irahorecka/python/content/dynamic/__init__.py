@@ -1,39 +1,37 @@
+from sqlalchemy import exc
+
 from irahorecka.models import db, GitHubRepo, RepoLanguage, CraigslistHousing
-from irahorecka.python.dynamic_content.config import GITHUB_TOKEN, GITHUB_REPOS
-from irahorecka.python.dynamic_content.github_repos import fetch_github_repos
-from irahorecka.python.dynamic_content.craigslist_housing import fetch_craigslist_housing
+from irahorecka.python.content.config import GITHUB_TOKEN, GITHUB_REPOS
+from irahorecka.python.content.dynamic.github_repos import fetch_repos
+from irahorecka.python.content.dynamic.craigslist_housing import fetch_sfbay_housing
 
 
 def read_github_repos():
     """Returns GitHub repos information as a dictionary."""
-    repos = []
     for repo_name in GITHUB_REPOS:
         repo = GitHubRepo.query.filter_by(name=repo_name).first()
-        repos.append(
-            {
-                "name": str(repo.name),
-                "full_name": str(repo.full_name),
-                "description": str(repo.description),
-                "license": str(repo.license),
-                "private": bool(repo.private),
-                "stars": int(repo.stars),
-                "forks": int(repo.forks),
-                "commits": int(repo.commits),
-                "open_issues": int(repo.open_issues),
-                "languages": [{"name": str(lang.name), "color": str(lang.color)} for lang in repo.languages],
-                "url": str(repo.url),
-            }
-        )
-    return repos
+        yield {
+            "name": repo.name,
+            "full_name": repo.full_name,
+            "description": repo.description,
+            "license": repo.license,
+            "private": repo.private,
+            "stars": repo.stars,
+            "forks": repo.forks,
+            "commits": repo.commits,
+            "open_issues": repo.open_issues,
+            "languages": [{"name": lang.name, "color": lang.color} for lang in repo.languages],
+            "url": repo.url,
+        }
 
 
 def write_github_repos():
+    """Write GitHub repos to database."""
     # Drop content in tables - don't bother updating as hard reset for a small
     # table like this is preferable.
     GitHubRepo.query.delete()
     RepoLanguage.query.delete()
-    repos = fetch_github_repos(GITHUB_TOKEN)
-    for repo in repos:
+    for repo in fetch_repos(GITHUB_TOKEN):
         repo_entry = GitHubRepo(
             name=repo["name"],
             full_name=repo["full_name"],
@@ -54,19 +52,38 @@ def write_github_repos():
     db.session.commit()
 
 
-def read_craigslist_housing():
-    """Returns SFBay Craigslist Housing information as a dictionary."""
-    import json
-
-    with open("sfbay_housing.json") as file:
-        data = json.load(file)
-    return data
+def read_craigslist_housing(limit=1_000_000):
+    """Returns SFBay Craigslist Housing information as a list of dictionaries."""
+    for idx, post in enumerate(CraigslistHousing.query):
+        if idx == limit:
+            return
+        yield {
+            "country": post.country,
+            "region": post.region,
+            "site": post.site,
+            "area": post.area,
+            "post_id": post.post_id,
+            "repost_of": post.repost_of,
+            "last_updated": post.last_updated,
+            "title": post.title,
+            "neighborhood": post.neighborhood,
+            "address": post.address,
+            "lat": post.lat,
+            "lon": post.lon,
+            "price": post.price,
+            "bedrooms": post.bedrooms,
+            "housing_type": post.housing_type,
+            "area_ft2": post.area_ft2,
+            "laundry": post.laundry,
+            "parking": post.parking,
+            "url": post.url,
+            "misc": post.misc.split(";"),
+        }
 
 
 def write_craigslist_housing():
-    craigslist_housing = fetch_craigslist_housing()
-    from sqlalchemy import exc
-
+    """Write unique SF Bay Area Craigslist Housing posts (`apa`) to database."""
+    craigslist_housing = fetch_sfbay_housing()
     posts = [
         CraigslistHousing(
             id=post["id"],
