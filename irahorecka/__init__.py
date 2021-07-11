@@ -5,24 +5,20 @@ Ira Horecka - June 2021
 
 #
 """
-
-import yaml
-from pathlib import Path
-
 from flask import Flask
 from flask_assets import Bundle, Environment
+from flask_sqlalchemy import SQLAlchemy
 
-ROOT_PATH = Path(__file__).absolute().parent.parent
-MODULE_PATH = Path(__file__).absolute().parent
-with open(ROOT_PATH.joinpath("config.yaml"), "r") as config:
-    CONFIG = yaml.safe_load(config)
+from irahorecka.config import Config
 
+db = SQLAlchemy()
 
 app = Flask(__name__)
+app.config.from_object(Config)
+db.init_app(app)
 
 assets = Environment(app)
 css = Bundle("src/main.css", output="dist/main.css", filters="postcss")
-
 assets.register("css", css)
 css.build()
 

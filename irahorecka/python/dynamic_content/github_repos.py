@@ -17,17 +17,12 @@ JSON content:
 
 import concurrent.futures
 import json
-import yaml
-from pathlib import Path
 
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
+from irahorecka.python.dynamic_content.config import GITHUB_REPOS, GITHUB_JSON_PATH
 
-CONFIG_PATH = Path(__file__).absolute().parent.parent.parent.parent / "config.yaml"
-with open(CONFIG_PATH, "r") as config:
-    GITHUB_REPOS = yaml.safe_load(config)["github-repos"]
-GITHUB_JSON_PATH = Path(__file__).absolute().parent.parent.parent / "static" / "data" / "github_repos.json"
 LANGUAGE_COLOR = {
     "python": "#3672a5",
     "css": "#563d7c",

@@ -1,7 +1,4 @@
-from functools import reduce
-from pathlib import Path
-
-GALLERY_PATH = Path(__file__).absolute().parent.parent.parent / "static" / "images" / "gallery"
+from irahorecka.python.static_content.config import GALLERY_PATH
 
 
 def get_gallery_imgs():
