@@ -1,7 +1,8 @@
 from irahorecka import db
 
 
-class GitHubRepos(db.Model):
+class GitHubRepo(db.Model):
+    __tablename__ = "githubrepo"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
     full_name = db.Column(db.String(120))
@@ -12,11 +13,19 @@ class GitHubRepos(db.Model):
     forks = db.Column(db.Integer)
     commits = db.Column(db.Integer)
     open_issues = db.Column(db.Integer)
-    languages = db.relationship("RepoLanguages", uselist=False)
+    languages = db.relationship("RepoLanguage", backref="repo")
+    url = db.Column(db.String(240))
+
+    def __repr__(self):
+        return f"GitHubRepo(name={self.name})"
 
 
-class RepoLanguages(db.Model):
+class RepoLanguage(db.Model):
+    __tablename__ = "repolanguage"
     id = db.Column(db.Integer, primary_key=True)
-    repo_id = db.Column(db.Integer, db.ForeignKey("GitHubRepos.id"))
     name = db.Column(db.String(80))
     color = db.Column(db.String(20))
+    repo_id = db.Column(db.Integer, db.ForeignKey("githubrepo.id"))
+
+    def __repr__(self):
+        return f"RepoLanguage(name={self.name})"

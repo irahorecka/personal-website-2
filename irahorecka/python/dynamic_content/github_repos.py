@@ -21,7 +21,7 @@ import json
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
-from irahorecka.python.dynamic_content.config import GITHUB_REPOS, GITHUB_JSON_PATH
+from irahorecka.python.dynamic_content.config import GITHUB_REPOS
 
 LANGUAGE_COLOR = {
     "python": "#3672a5",
@@ -41,21 +41,18 @@ LANGUAGE_COLOR = {
 }
 
 
-def write_github_repos(access_token):
-    """Entry point function to write GitHub user's repos (via access token)
-    to `GITHUB_JSON_PATH`. Returns exit code 0 if success, 1 if failure."""
+def fetch_github_repos(access_token):
+    """Entry point function to fetch GitHub user's repos (via access token)."""
     try:
         user = Github(access_token).get_user()
     except RateLimitExceededException:
         # Throttled access to GitHub's API
-        return 1
+        return []
     repos = user.get_repos()
     repos_dict = {repo["name"]: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
     # Write a list of repositories in `GITHUB_REPOS` (in the order they appear) to JSON
     index_map = {repo_name: idx for idx, repo_name in enumerate(GITHUB_REPOS)}
-    repos_list = [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
-    write_json(repos_list, GITHUB_JSON_PATH)
-    return 0
+    return [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
 
 
 def map_threads(func, _iterable):

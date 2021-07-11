@@ -8,6 +8,8 @@ Get zip codes for alameda, contra costa, santa clara, san francisco, santa cruz,
 NOTE: eventually, we want to transition data storage and fetching from a database
 """
 
+import json
+
 import pycraigslist
 
 
@@ -30,12 +32,19 @@ def yield_pycraigslist_apa():
     ]
 
 
-count = 0
+def write_json(data, output_path):
+    """Writes dictionary to JSON file."""
+    with open(output_path, "w") as file:
+        json.dump(data, file)
+
+
+sfbay_housing = []
 id_ref = []
 for apa in yield_pycraigslist_apa():
     for post in apa.search_detail():
         if post["id"] in id_ref:
             continue
         id_ref.append(post["id"])
-        count += 1
-        print(count, "----------", post["url"], post["lat"], post["lon"])
+        sfbay_housing.append(post)
+
+write_json(sfbay_housing, "sfbay_housing.json")

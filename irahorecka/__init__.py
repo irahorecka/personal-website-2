@@ -11,11 +11,9 @@ from flask_sqlalchemy import SQLAlchemy
 
 from irahorecka.config import Config
 
-db = SQLAlchemy()
-
 app = Flask(__name__)
 app.config.from_object(Config)
-db.init_app(app)
+db = SQLAlchemy(app)
 
 assets = Environment(app)
 css = Bundle("src/main.css", output="dist/main.css", filters="postcss")
