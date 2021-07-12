@@ -28,7 +28,7 @@ def read_craigslist_housing(requests_args):
             "region": post.region,
             "site": post.site,
             "area": post.area,
-            "post_id": post.post_id,
+            "post_id": post.id,
             "repost_of": post.repost_of,
             "last_updated": post.last_updated,
             "title": post.title,
@@ -36,10 +36,10 @@ def read_craigslist_housing(requests_args):
             "address": post.address,
             "lat": post.lat,
             "lon": post.lon,
-            "price": post.price,
+            "price": "$" + str(post.price),
             "bedrooms": post.bedrooms,
             "housing_type": post.housing_type,
-            "area_ft2": post.area_ft2,
+            "ft2": post.ft2,
             "laundry": post.laundry,
             "parking": post.parking,
             "url": post.url,
@@ -50,8 +50,13 @@ def read_craigslist_housing(requests_args):
 def filter_requests_query(session, requests_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
     in `requests_args`."""
-    query_filter = {
-        "post_id": requests_args.get("post_id", ""),
+    query = filter_categorical(session, requests_args)
+    return filter_scalar(session, query, requests_args)
+
+
+def filter_categorical(session, requests_args):
+    categorical_filter = {
+        "id": requests_args.get("id", ""),
         "area": requests_args.get("area", ""),
         "neighborhood": requests_args.get("neighborhood", ""),
         "bedrooms": requests_args.get("bedrooms", ""),
@@ -60,9 +65,31 @@ def filter_requests_query(session, requests_args):
         "parking": requests_args.get("parking", ""),
     }
     query = session.query
-    for attr, value in query_filter.items():
+    for attr, value in categorical_filter.items():
         query = query.filter(getattr(session, attr).like("%%%s%%" % value))
     return query
+
+
+def filter_scalar(session, query, requests_args):
+    def to_scalar(str_scalar):
+        return float(str_scalar.strip("$").strip(","))
+
+    scalar_filter = {
+        "min_bedrooms": to_scalar(requests_args.get("min_bedrooms", "0")),
+        "max_bedrooms": to_scalar(requests_args.get("max_bedrooms", "100")),
+        "min_ft2": to_scalar(requests_args.get("min_ft2", "0")),
+        "max_ft2": to_scalar(requests_args.get("max_ft2", "1000000")),
+        "min_price": to_scalar(requests_args.get("min_price", "0")),
+        "max_price": to_scalar(requests_args.get("max_price", "100000")),
+    }
+    return (
+        query.filter(session.bedrooms >= scalar_filter["min_bedrooms"])
+        .filter(session.bedrooms <= scalar_filter["max_bedrooms"])
+        .filter(session.ft2 >= scalar_filter["min_ft2"])
+        .filter(session.ft2 <= scalar_filter["max_ft2"])
+        .filter(session.price >= scalar_filter["min_price"])
+        .filter(session.price <= scalar_filter["max_price"])
+    )
 
 
 def write_craigslist_housing(site, areas=["null"]):
@@ -75,18 +102,19 @@ def write_craigslist_housing(site, areas=["null"]):
             region=post.get("region", ""),
             site=post.get("site", ""),
             area=post.get("area", ""),
-            post_id=post["id"],
             repost_of=post.get("repost_of", ""),
             last_updated=post.get("last_updated", ""),
             title=post.get("title", ""),
             neighborhood=post.get("neighborhood", ""),
             address=post.get("address", ""),
-            lat=post.get("lat", ""),
-            lon=post.get("lon", ""),
-            price=post.get("price", ""),
-            bedrooms=post.get("bedrooms", ""),
+            # Coordinates for Guest Peninsula, Antactica if there's no lat or lon
+            lat="-76.299965" if post.get("lat", "") == "" else post.get("lat", ""),
+            lon="-148.003021" if post.get("lon", "") == "" else post.get("lon", ""),
+            # Convert price into numerics: e.g. $1,500 --> 1500
+            price=post.get("price", "0").strip("$").strip(","),
+            bedrooms=post.get("bedrooms", "0"),
             housing_type=post.get("housing_type", ""),
-            area_ft2=post.get("area-ft2", ""),
+            ft2=post.get("area-ft2", "0"),
             laundry=post.get("laundry", ""),
             parking=post.get("parking", ""),
             url=post.get("url", ""),
@@ -139,5 +167,6 @@ def yield_apa_filters():
     # Craigslist limits number of posts to 3000 for any given query.
     yield from [
         {"min_price": min_price, "max_price": max_price}
-        for min_price, max_price in zip(range(0, 8000, 500), range(500, 8500, 500))
+        for min_price, max_price in [(0, 500)]
+        # zip(range(0, 8000, 500), range(500, 8500, 500)
     ]

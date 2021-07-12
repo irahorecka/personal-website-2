@@ -42,8 +42,9 @@ LANGUAGE_COLOR = {
 }
 
 
+# TODO: Change to pass in repo_names
 def read_github_repos():
-    """Returns GitHub repos information as a dictionary."""
+    """Returns GitHub repos information as a dictionary from database."""
     for repo_name in GITHUB_REPOS:
         repo = GitHubRepo.query.filter_by(name=repo_name).first()
         yield {
@@ -61,8 +62,9 @@ def read_github_repos():
         }
 
 
+# TODO: Change to pass in github_token
 def write_github_repos():
-    """Write GitHub repos to database."""
+    """Write `GITHUB_TOKEN` user's GitHub repos to database."""
     # Drop content in tables - don't bother updating as hard reset for a small
     # table like this is preferable.
     GitHubRepo.query.delete()
