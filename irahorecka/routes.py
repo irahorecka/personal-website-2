@@ -6,7 +6,7 @@ Ira Horecka - June 2021
 #
 """
 
-from flask import render_template, jsonify
+from flask import render_template, request, jsonify
 
 from irahorecka import app
 from irahorecka.python import (
@@ -31,10 +31,11 @@ def home():
     return render_template("home.html", content=content)
 
 
-@app.route("/", subdomain="api")
+@app.route("/housing/sfbay", subdomain="api")
 def rest_api():
     """REST-like API of personal website."""
-    return jsonify(list(read_craigslist_housing(limit=1000)))
+    # As of August 2021, I'm only serving up housing posts from the SF Bay Area
+    return jsonify(list(read_craigslist_housing(request.args)))
 
 
 @app.route("/api")

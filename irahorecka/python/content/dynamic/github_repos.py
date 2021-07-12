@@ -21,7 +21,8 @@ import json
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
-from irahorecka.python.content.config import GITHUB_REPOS
+from irahorecka.models import db, GitHubRepo, RepoLanguage
+from irahorecka.python.content.config import GITHUB_TOKEN, GITHUB_REPOS
 
 LANGUAGE_COLOR = {
     "python": "#3672a5",
@@ -39,6 +40,52 @@ LANGUAGE_COLOR = {
     "shell": "#89e051",
     "batchfile": "#c1f12e",
 }
+
+
+def read_github_repos():
+    """Returns GitHub repos information as a dictionary."""
+    for repo_name in GITHUB_REPOS:
+        repo = GitHubRepo.query.filter_by(name=repo_name).first()
+        yield {
+            "name": repo.name,
+            "full_name": repo.full_name,
+            "description": repo.description,
+            "license": repo.license,
+            "private": repo.private,
+            "stars": repo.stars,
+            "forks": repo.forks,
+            "commits": repo.commits,
+            "open_issues": repo.open_issues,
+            "languages": [{"name": lang.name, "color": lang.color} for lang in repo.languages],
+            "url": repo.url,
+        }
+
+
+def write_github_repos():
+    """Write GitHub repos to database."""
+    # Drop content in tables - don't bother updating as hard reset for a small
+    # table like this is preferable.
+    GitHubRepo.query.delete()
+    RepoLanguage.query.delete()
+    for repo in fetch_repos(GITHUB_TOKEN):
+        repo_entry = GitHubRepo(
+            name=repo["name"],
+            full_name=repo["full_name"],
+            description=repo["description"],
+            license=repo["license"],
+            private=repo["private"],
+            stars=repo["stars"],
+            forks=repo["forks"],
+            commits=repo["commits"],
+            open_issues=repo["open_issues"],
+            url=repo["url"],
+        )
+        db.session.add(repo_entry)
+        for lang in repo["languages"]:
+            # Back-reference language used in repository to `repo_entry`
+            lang_session = RepoLanguage(name=lang["name"], color=lang["color"], repo=repo_entry)
+            db.session.add(lang_session)
+    db.session.commit()
 
 
 def fetch_repos(access_token):
