@@ -17,9 +17,15 @@ from irahorecka.models import db, CraigslistHousing
 
 def read_craigslist_housing(requests_args):
     """Reads and returns SF Bay Area Craigslist Housing posts as a list of dictionaries."""
+
+    def nullify_empty_value(value):
+        if not value:
+            return None
+        return value
+
     filtered_housing_query = filter_requests_query(CraigslistHousing, requests_args)
     # Read up to 1,000,000 items if no limit filter is provided.
-    limit = requests_args.get("limit", 1_000_000)
+    limit = int(requests_args.get("limit", "1000000"))
     for idx, post in enumerate(filtered_housing_query):
         if idx == limit:
             return
@@ -29,19 +35,19 @@ def read_craigslist_housing(requests_args):
             "site": post.site,
             "area": post.area,
             "post_id": post.id,
-            "repost_of": post.repost_of,
-            "last_updated": post.last_updated,
+            "repost_of": nullify_empty_value(post.repost_of),
+            "last_updated": nullify_empty_value(post.last_updated),
             "title": post.title,
-            "neighborhood": post.neighborhood,
-            "address": post.address,
-            "lat": post.lat,
-            "lon": post.lon,
-            "price": "$" + str(post.price),
-            "bedrooms": post.bedrooms,
-            "housing_type": post.housing_type,
-            "ft2": post.ft2,
-            "laundry": post.laundry,
-            "parking": post.parking,
+            "neighborhood": nullify_empty_value(post.neighborhood),
+            "address": nullify_empty_value(post.address),
+            "lat": nullify_empty_value(post.lat),
+            "lon": nullify_empty_value(post.lon),
+            "price": nullify_empty_value("$" + str(post.price)),
+            "bedrooms": nullify_empty_value(post.bedrooms),
+            "housing_type": nullify_empty_value(post.housing_type),
+            "ft2": nullify_empty_value(post.ft2),
+            "laundry": nullify_empty_value(post.laundry),
+            "parking": nullify_empty_value(post.parking),
             "url": post.url,
             "misc": post.misc.split(";"),
         }
@@ -72,7 +78,7 @@ def filter_categorical(session, requests_args):
 
 def filter_scalar(session, query, requests_args):
     def to_scalar(str_scalar):
-        return float(str_scalar.strip("$").strip(","))
+        return float(str_scalar.replace("$", "").replace(",", ""))
 
     scalar_filter = {
         "min_bedrooms": to_scalar(requests_args.get("min_bedrooms", "0")),
@@ -101,17 +107,17 @@ def write_craigslist_housing(site, areas=["null"]):
             country=post.get("country", ""),
             region=post.get("region", ""),
             site=post.get("site", ""),
-            area=post.get("area", ""),
+            area=post.get("area", "0"),
             repost_of=post.get("repost_of", ""),
             last_updated=post.get("last_updated", ""),
             title=post.get("title", ""),
             neighborhood=post.get("neighborhood", ""),
             address=post.get("address", ""),
             # Coordinates for Guest Peninsula, Antactica if there's no lat or lon
-            lat="-76.299965" if post.get("lat", "") == "" else post.get("lat", ""),
-            lon="-148.003021" if post.get("lon", "") == "" else post.get("lon", ""),
+            lat="-76.299965" if not post.get("lat") else post["lat"],
+            lon="-148.003021" if not post.get("lon") else post["lon"],
             # Convert price into numerics: e.g. $1,500 --> 1500
-            price=post.get("price", "0").strip("$").strip(","),
+            price=post.get("price", "0").replace("$", "").replace(",", ""),
             bedrooms=post.get("bedrooms", "0"),
             housing_type=post.get("housing_type", ""),
             ft2=post.get("area-ft2", "0"),
@@ -167,6 +173,5 @@ def yield_apa_filters():
     # Craigslist limits number of posts to 3000 for any given query.
     yield from [
         {"min_price": min_price, "max_price": max_price}
-        for min_price, max_price in [(0, 500)]
-        # zip(range(0, 8000, 500), range(500, 8500, 500)
+        for min_price, max_price in zip(range(0, 8000, 500), range(500, 8500, 500))
     ]
