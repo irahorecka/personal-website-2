@@ -31,6 +31,18 @@ a.github-link:focus {
     margin-right: 4px;
 }
 
+.fa-github {
+    color: #000000
+}
+
+.fa-linkedin-square {
+    color: #007bb6
+}
+
+.border-1 {
+    border-width: 1px;
+}
+
 /*===== END Main =====*/
 
 /*===== START Footer =====*/

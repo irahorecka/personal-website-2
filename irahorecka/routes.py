@@ -45,8 +45,7 @@ def home():
 def api_cl_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
     try:
-        params = request.args.to_dict()
-        params.update({"site": site})
+        params = {**{"site": site}, **request.args.to_dict()}
         return jsonify(list(read_craigslist_housing(params)))
     except ValueError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400)
@@ -57,8 +56,7 @@ def api_cl_site_area(site, area):
     """REST-like API for Craigslist housing - querying with Craigslist site
     and area."""
     try:
-        params = request.args.to_dict()
-        params.update({"site": site, "area": area})
+        params = {**{"site": site, "area": area}, **request.args.to_dict()}
         return jsonify(list(read_craigslist_housing(params)))
     except ValueError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400)

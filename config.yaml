@@ -3,7 +3,7 @@ localhost: true
 
 # Local IP address to host web app
 local-ip:
-  mac: 127.0.0.1
+  mac: 10.0.0.30
   win: 10.20.12.173
 
 # Port number to host web app - use 5000 as default
