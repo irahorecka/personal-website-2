@@ -1,3 +1,6 @@
+"""
+"""
+
 from irahorecka import db
 
 
@@ -47,11 +50,15 @@ class CraigslistHousing(db.Model):
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
     price = db.Column(db.Integer)
-    bedrooms = db.Column(db.Integer)
     housing_type = db.Column(db.String(80))
+    bedrooms = db.Column(db.Integer)
+    flooring = db.Column(db.String(80))
+    is_furnished = db.Column(db.Boolean)
+    no_smoking = db.Column(db.Boolean)
     ft2 = db.Column(db.Integer)
     laundry = db.Column(db.String(80))
     parking = db.Column(db.String(80))
+    rent_period = db.Column(db.String(80))
     url = db.Column(db.String(120))
     misc = db.Column(db.String(240))
 

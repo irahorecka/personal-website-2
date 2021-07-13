@@ -1,28 +1,12 @@
 """
-GOAL: Create a JSON format file for useful information regarding your github - use this to make a nice github summary webpage
-    Create a RESTful API to query this json content from a separate server (which gathers github information nightly)
-    Project this JSON on the front end. Simple query to server to just get the JSON back. 1 request 1 response
-
-JSON content:
-    project
-        project desc (description)
-        stargazer_count
-        forks_count
-        commit no. (get_commits)
-        open_issues_count
-        is private (private)
-        num collaborators (get_collaborators)
-        get_license
 """
 
 import concurrent.futures
-import json
 
 from github import Github
 from github.GithubException import RateLimitExceededException, UnknownObjectException
 
 from irahorecka.models import db, GitHubRepo, RepoLanguage
-from irahorecka.python.content.config import GITHUB_TOKEN, GITHUB_REPOS
 
 LANGUAGE_COLOR = {
     "python": "#3672a5",
@@ -42,10 +26,9 @@ LANGUAGE_COLOR = {
 }
 
 
-# TODO: Change to pass in repo_names
-def read_github_repos():
+def read_github_repos(repo_names):
     """Returns GitHub repos information as a dictionary from database."""
-    for repo_name in GITHUB_REPOS:
+    for repo_name in repo_names:
         repo = GitHubRepo.query.filter_by(name=repo_name).first()
         yield {
             "name": repo.name,
@@ -62,14 +45,18 @@ def read_github_repos():
         }
 
 
-# TODO: Change to pass in github_token
-def write_github_repos():
+def write_github_repos(github_token):
     """Write `GITHUB_TOKEN` user's GitHub repos to database."""
     # Drop content in tables - don't bother updating as hard reset for a small
     # table like this is preferable.
     GitHubRepo.query.delete()
     RepoLanguage.query.delete()
-    for repo in fetch_repos(GITHUB_TOKEN):
+    # Fetch repos first to allow fastest write to db.
+    repos = fetch_repos(github_token)
+    # Don't write to database if repos fetch failed.
+    if not repos:
+        return
+    for repo in repos:
         repo_entry = GitHubRepo(
             name=repo["name"],
             full_name=repo["full_name"],
@@ -84,7 +71,7 @@ def write_github_repos():
         )
         db.session.add(repo_entry)
         for lang in repo["languages"]:
-            # Back-reference language used in repository to `repo_entry`
+            # Back-reference programming language used in a repo to `repo_entry`
             lang_session = RepoLanguage(name=lang["name"], color=lang["color"], repo=repo_entry)
             db.session.add(lang_session)
     db.session.commit()
@@ -98,10 +85,7 @@ def fetch_repos(access_token):
         # Throttled access to GitHub's API
         return []
     repos = user.get_repos()
-    repos_dict = {repo["name"]: repo for repo in map_threads(build_repo_dict, repos) if repo is not None}
-    # Write a list of repositories in `GITHUB_REPOS` (in the order they appear) to JSON
-    index_map = {repo_name: idx for idx, repo_name in enumerate(GITHUB_REPOS)}
-    return [tup[1] for tup in sorted(repos_dict.items(), key=lambda pair: index_map[pair[0]])]
+    return [repo for repo in map_threads(build_repo_dict, repos) if repo is not None]
 
 
 def map_threads(func, _iterable):
@@ -113,9 +97,6 @@ def map_threads(func, _iterable):
 
 def build_repo_dict(repo):
     """Isolates desired properties of a GitHub repository."""
-    repo_name = repo.full_name.split("/")[-1]
-    if repo_name not in GITHUB_REPOS:
-        return None
     return {
         "name": repo.full_name.split("/")[-1],
         "full_name": repo.full_name,
@@ -146,9 +127,3 @@ def get_languages(repo):
     """Returns language color as seen on GitHub."""
     languages = repo.get_languages()
     return [{"name": lang, "color": LANGUAGE_COLOR.get(lang.lower(), "#ffffff")} for lang in languages]
-
-
-def write_json(data, output_path):
-    """Writes dictionary to JSON file."""
-    with open(output_path, "w") as file:
-        json.dump(data, file)

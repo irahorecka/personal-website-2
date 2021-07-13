@@ -1,2 +1,0 @@
-from irahorecka.python.content.dynamic.github_repos import read_github_repos, write_github_repos
-from irahorecka.python.content.dynamic.craigslist_housing import read_craigslist_housing, write_craigslist_housing

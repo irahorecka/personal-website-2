@@ -1,4 +1,12 @@
+"""
+"""
+
 import os
+import yaml
+from pathlib import Path
+
+with open(Path(__file__).absolute().parent.parent / "config.yaml", "r") as config:
+    GITHUB_REPOS = yaml.safe_load(config)["github-repos"]
 
 
 class Config:

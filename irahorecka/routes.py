@@ -1,6 +1,6 @@
 """
-/enrichment/routes.py
-Ira Horecka - June 2021
+/irahorecka/routes.py
+Ira Horecka - July 2021
 ~~~~~~~~~~~~~~~~~~~~~~~
 
 #
@@ -9,6 +9,7 @@ Ira Horecka - June 2021
 from flask import render_template, request, jsonify
 
 from irahorecka import app
+from irahorecka.config import GITHUB_REPOS
 from irahorecka.python import (
     get_header_text,
     get_body_text,
@@ -58,6 +59,6 @@ def projects():
         "profile_img": "me_computing.png",
         "header": get_header_text("projects"),
         "body": get_body_text("projects"),
-        "repos": read_github_repos(),
+        "repos": read_github_repos(GITHUB_REPOS),
     }
     return render_template("projects.html", content=content)

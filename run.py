@@ -1,10 +1,11 @@
 """
 /run.py
-Ira Horecka - June 2021
+Ira Horecka - July 2021
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-A script that starts a Flask web application instance.
+Starts a Flask web application instance.
 """
+
 import yaml
 from pathlib import Path
 
