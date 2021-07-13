@@ -83,20 +83,13 @@ def filter_categorical(session, requests_args):
 def filter_scalar(session, query, requests_args):
     """Filters scalar attributes of the requests query.
     E.g. `min_price=1000`."""
-
-    def to_scalar(str_numerics):
-        """Convert string numerics to a floating point value.
-        E.g. '$1,200' --> 1200.0, '8' --> 8.0"""
-        # Concat `.replace` for any additional filtering prior to casting to float.
-        return float(str_numerics.replace("$", "").replace(",", ""))
-
     scalar_filter = {
-        "min_bedrooms": to_scalar(requests_args.get("min_bedrooms", "0")),
-        "max_bedrooms": to_scalar(requests_args.get("max_bedrooms", "100")),
-        "min_ft2": to_scalar(requests_args.get("min_ft2", "0")),
-        "max_ft2": to_scalar(requests_args.get("max_ft2", "1000000")),
-        "min_price": to_scalar(requests_args.get("min_price", "0")),
-        "max_price": to_scalar(requests_args.get("max_price", "100000")),
+        "min_bedrooms": float(requests_args.get("min_bedrooms", "0")),
+        "max_bedrooms": float(requests_args.get("max_bedrooms", "100")),
+        "min_ft2": float(requests_args.get("min_ft2", "0")),
+        "max_ft2": float(requests_args.get("max_ft2", "1000000")),
+        "min_price": float(requests_args.get("min_price", "0")),
+        "max_price": float(requests_args.get("max_price", "100000")),
     }
     return (
         query.filter(session.bedrooms >= scalar_filter["min_bedrooms"])

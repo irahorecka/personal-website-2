@@ -63,4 +63,4 @@ class CraigslistHousing(db.Model):
     misc = db.Column(db.String(240))
 
     def __repr__(self):
-        return f"CraigslistHousing(post_id={self.post_id})"
+        return f"CraigslistHousing(id={self.post_id})"

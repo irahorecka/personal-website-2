@@ -10,6 +10,7 @@ from flask import render_template, request, jsonify
 
 from irahorecka import app
 from irahorecka.config import GITHUB_REPOS
+from irahorecka.exceptions import InvalidUsage
 from irahorecka.python import (
     get_header_text,
     get_body_text,
@@ -17,6 +18,13 @@ from irahorecka.python import (
     read_github_repos,
     read_craigslist_housing,
 )
+
+
+@app.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
 
 
 @app.route("/")
@@ -36,7 +44,10 @@ def home():
 def rest_api():
     """REST-like API of personal website."""
     # As of August 2021, I'm only serving up housing posts from the SF Bay Area
-    return jsonify(list(read_craigslist_housing(request.args)))
+    try:
+        return jsonify(list(read_craigslist_housing(request.args)))
+    except ValueError as e:
+        raise InvalidUsage(str(e).capitalize(), status_code=400)
 
 
 @app.route("/api")
