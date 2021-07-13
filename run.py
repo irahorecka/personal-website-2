@@ -6,8 +6,9 @@ Ira Horecka - July 2021
 Starts a Flask web application instance.
 """
 
-import yaml
 from pathlib import Path
+
+import yaml
 
 from irahorecka import app
 

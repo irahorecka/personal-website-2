@@ -48,7 +48,7 @@ def api_cl_site(site):
         params = {**{"site": site}, **request.args.to_dict()}
         return jsonify(list(read_craigslist_housing(params)))
     except ValueError as e:
-        raise InvalidUsage(str(e).capitalize(), status_code=400)
+        raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
 
 @app.route("/housing/<site>/<area>", subdomain="api")
@@ -59,7 +59,7 @@ def api_cl_site_area(site, area):
         params = {**{"site": site, "area": area}, **request.args.to_dict()}
         return jsonify(list(read_craigslist_housing(params)))
     except ValueError as e:
-        raise InvalidUsage(str(e).capitalize(), status_code=400)
+        raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
 
 @app.route("/api")

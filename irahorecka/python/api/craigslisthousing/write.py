@@ -8,7 +8,7 @@ from sqlalchemy import exc
 from irahorecka.models import db, CraigslistHousing
 
 
-def write_craigslist_housing(site, areas=["null"]):
+def write_craigslist_housing(site, areas=("null",)):
     """Writes unique SF Bay Area Craigslist Housing posts (`apa`) to database."""
     craigslist_housing = fetch_craigslist_apa(site, areas)
     posts = [

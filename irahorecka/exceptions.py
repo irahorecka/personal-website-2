@@ -18,6 +18,7 @@ class InvalidUsage(Exception):
         self.payload = payload
 
     def to_dict(self):
+        """Converts payload to dict - also adds 'status' and 'message' attributes."""
         rv = dict(self.payload or ())
         rv["status"] = self.status_text
         rv["message"] = self.message
