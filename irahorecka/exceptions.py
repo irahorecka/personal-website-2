@@ -3,6 +3,8 @@
 
 
 class InvalidUsage(Exception):
+    """Returns JSON response outlining invalid usage status and message."""
+
     status_code = 400
     status_text = "BAD_REQUEST"
 

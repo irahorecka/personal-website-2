@@ -68,6 +68,7 @@ def filter_categorical(session, requests_args):
         # and it's not a demanding query parameter.
         "id": requests_args.get("id", ""),
         "area": requests_args.get("area", ""),
+        "site": requests_args.get("site", ""),
         "neighborhood": requests_args.get("neighborhood", ""),
         "housing_type": requests_args.get("housing_type", ""),
         "bedrooms": requests_args.get("bedrooms", ""),

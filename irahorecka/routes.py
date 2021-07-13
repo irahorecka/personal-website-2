@@ -22,6 +22,7 @@ from irahorecka.python import (
 
 @app.errorhandler(InvalidUsage)
 def handle_invalid_usage(error):
+    """Handles invalid usage from REST-like api."""
     response = jsonify(error.to_dict())
     response.status_code = error.status_code
     return response
@@ -40,12 +41,25 @@ def home():
     return render_template("home.html", content=content)
 
 
-@app.route("/housing/sfbay", subdomain="api")
-def rest_api():
-    """REST-like API of personal website."""
-    # As of August 2021, I'm only serving up housing posts from the SF Bay Area
+@app.route("/housing/<site>", subdomain="api")
+def api_cl_site(site):
+    """REST-like API for Craigslist housing - querying with Craigslist site."""
     try:
-        return jsonify(list(read_craigslist_housing(request.args)))
+        params = request.args.to_dict()
+        params.update({"site": site})
+        return jsonify(list(read_craigslist_housing(params)))
+    except ValueError as e:
+        raise InvalidUsage(str(e).capitalize(), status_code=400)
+
+
+@app.route("/housing/<site>/<area>", subdomain="api")
+def api_cl_site_area(site, area):
+    """REST-like API for Craigslist housing - querying with Craigslist site
+    and area."""
+    try:
+        params = request.args.to_dict()
+        params.update({"site": site, "area": area})
+        return jsonify(list(read_craigslist_housing(params)))
     except ValueError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400)
 
