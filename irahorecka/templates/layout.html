@@ -9,7 +9,6 @@
       {% assets 'css' -%}
       <link rel="stylesheet" href="{{ ASSET_URL }}">
       {%- endassets %}
-      <link rel="stylesheet" href="{{ url_for('static', filename='css/fork-awesome/fork-awesome.min.css') }}">
       <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
       <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
       <script src="https://code.iconify.design/1/1.0.7/iconify.min.js"></script>
@@ -35,16 +34,19 @@
       <div class="container px-8 pt-8 pb-16 mt-0 lg:mt-16 flex flex-col lg:flex-row m-auto">
          <div class="flex flex-row lg:flex-col content-between w-32 lg:w-48 mt-0 lg:mr-16">
             <img src="{{ url_for('static', filename=['images/{}'.format(content.profile_img)]) }}" class="p-1 border-1 w-full h-32 xl:h-48 rounded-full shadow-lg">
-            <div class="text-left text-base lg:text-lg m-auto lg:mt-9 ml-6 lg:ml-2">
-               <ul>
+            <div class="text-left text-base m-auto lg:mt-9 ml-6 lg:ml-2">
+               <ul class="font-medium">
                   <li>
-                     <a class="font-medium inline-flex" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+                     <p class="underline mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">Lab Automation Engineer</p>
+                  </li>
+                  <li>
+                     <a class="inline-flex" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
                         <img src="{{ url_for('static', filename="images/github.svg") }}" class="fa-icon m-auto mr-2">
                         GitHub
                      </a>
                   </li>
                   <li>
-                     <a class="font-medium inline-flex" href="https://www.linkedin.com/in/ira-horecka-3a8877128/" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+                     <a class="inline-flex" href="https://www.linkedin.com/in/ira-horecka-3a8877128/" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
                         <img src="{{ url_for('static', filename="images/linkedin.svg") }}" class="fa-icon linkedin-blue max-h-4 m-auto mr-2">
                         LinkedIn
                      </a>
