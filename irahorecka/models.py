@@ -38,8 +38,6 @@ class CraigslistHousing(db.Model):
     __tablename__ = "craigslisthousing"
     # `id` is the Craigslist's post ID
     id = db.Column(db.Integer, primary_key=True)
-    country = db.Column(db.String(8))
-    region = db.Column(db.String(8))
     site = db.Column(db.String(8))
     area = db.Column(db.String(8))
     repost_of = db.Column(db.String(20))

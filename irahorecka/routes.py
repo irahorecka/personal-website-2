@@ -71,7 +71,19 @@ def api():
         "header": get_header_text("api"),
         "body": get_body_text("api"),
     }
-    return render_template("api.html", content=content)
+    return render_template("api/api.html", content=content)
+
+
+@app.route("/api/docs")
+def api_docs():
+    """Documentation page for personal website's API."""
+    content = {
+        "title": "Ira Horecka | API",
+        "profile_img": "me_arrow.png",
+        "header": get_header_text("api"),
+        "body": get_body_text("api"),
+    }
+    return render_template("api/docs.html", content=content)
 
 
 @app.route("/projects")

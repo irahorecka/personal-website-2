@@ -9,9 +9,7 @@ def read_craigslist_housing(requests_args):
 
     def nullify_empty_value(value):
         """Returns None for a non-truthful value (e.g. 0, "", False)."""
-        if not value:
-            return None
-        return value
+        return None if not value else value
 
     filtered_housing_query = filter_requests_query(CraigslistHousing, requests_args)
     # Read up to 1,000,000 items if no limit filter is provided.
@@ -26,8 +24,6 @@ def read_craigslist_housing(requests_args):
             "last_updated": nullify_empty_value(post.last_updated),
             "url": post.url,
             # Location
-            "country": post.country,
-            "region": post.region,
             "site": post.site,
             "area": post.area,
             "neighborhood": nullify_empty_value(post.neighborhood),

@@ -14,8 +14,6 @@ def write_craigslist_housing(site, areas=("null",)):
     posts = [
         CraigslistHousing(
             id=post["id"],
-            country=post.get("country", ""),
-            region=post.get("region", ""),
             site=post.get("site", ""),
             area=post.get("area", "0"),
             repost_of=post.get("repost_of", ""),
