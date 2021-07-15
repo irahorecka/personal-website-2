@@ -25,6 +25,12 @@ CONTENT = {
             "first": "I enjoy writing API wrappers in Python. Take a look at my REST API for Craigslist housing in the SF Bay Area."
         },
     },
+    "api_docs": {
+        "header": {"first": "API Documentation"},
+        "body": {
+            "first": "Please review closely for building a structured query. Currently, the only API hosted is for Craigslist Housing in the San Francisco Bay Area."
+        },
+    },
     "projects": {
         "header": {"first": "Programming projects"},
         "body": {

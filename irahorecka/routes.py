@@ -78,10 +78,10 @@ def api():
 def api_docs():
     """Documentation page for personal website's API."""
     content = {
-        "title": "Ira Horecka | API",
+        "title": "Ira Horecka | API Documentation",
         "profile_img": "me_arrow.png",
-        "header": get_header_text("api"),
-        "body": get_body_text("api"),
+        "header": get_header_text("api_docs"),
+        "body": get_body_text("api_docs"),
     }
     return render_template("api/docs.html", content=content)
 
