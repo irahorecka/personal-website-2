@@ -1,6 +1,8 @@
 """
 """
 
+from datetime import datetime
+
 from irahorecka.models import CraigslistHousing
 
 
@@ -21,7 +23,7 @@ def read_craigslist_housing(requests_args):
             # Metadata
             "id": post.id,
             "repost_of": nullify_empty_value(post.repost_of),
-            "last_updated": nullify_empty_value(post.last_updated),
+            "last_updated": datetime.strftime(post.last_updated, "%Y-%m-%d %H:%M"),
             "url": post.url,
             # Location
             "site": post.site,

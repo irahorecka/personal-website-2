@@ -41,7 +41,7 @@ class CraigslistHousing(db.Model):
     site = db.Column(db.String(8))
     area = db.Column(db.String(8))
     repost_of = db.Column(db.String(20))
-    last_updated = db.Column(db.String(20))
+    last_updated = db.Column(db.DateTime)
     title = db.Column(db.String(120))
     neighborhood = db.Column(db.String(120))
     address = db.Column(db.String(120))

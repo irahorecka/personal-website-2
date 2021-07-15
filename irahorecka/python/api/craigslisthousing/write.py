@@ -1,6 +1,8 @@
 """
 """
 
+from datetime import datetime
+
 import pycraigslist
 from pycraigslist.exceptions import MaximumRequestsError
 from sqlalchemy import exc
@@ -17,7 +19,7 @@ def write_craigslist_housing(site, areas=("null",)):
             site=post.get("site", ""),
             area=post.get("area", "0"),
             repost_of=post.get("repost_of", ""),
-            last_updated=post.get("last_updated", ""),
+            last_updated=datetime.strptime(post["last_updated"], "%Y-%m-%d %H:%M"),
             title=post.get("title", ""),
             neighborhood=post.get("neighborhood", ""),
             address=post.get("address", ""),
