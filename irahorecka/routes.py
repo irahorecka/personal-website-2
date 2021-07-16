@@ -90,10 +90,9 @@ def api_docs():
 
 @app.route("/api/neighborhoods", methods=["POST"])
 def api_neighborhoods():
-    area = SFBAY_AREA_KEY.get(request.form.get("area"))
-    neighborhoods = sorted(
-        [neighborhood.title() for neighborhood, locale in NEIGHBORHOODS.items() if locale["abrv"] == area]
-    )
+    area_key = SFBAY_AREA_KEY.get(request.form.get("area"))
+    print("HAHAHA")
+    neighborhoods = sorted([neighborhood.title() for neighborhood, area in NEIGHBORHOODS.items() if area == area_key])
     return render_template("api/neighborhoods.html", neighborhoods=neighborhoods)
 
 
