@@ -17,6 +17,8 @@ from irahorecka.python import (
     get_gallery_imgs,
     read_github_repos,
     read_craigslist_housing,
+    NEIGHBORHOODS,
+    SFBAY_AREA_KEY,
 )
 
 
@@ -84,6 +86,15 @@ def api_docs():
         "body": get_body_text("api_docs"),
     }
     return render_template("api/docs.html", content=content)
+
+
+@app.route("/api/neighborhoods", methods=["POST"])
+def api_neighborhoods():
+    area = SFBAY_AREA_KEY.get(request.form.get("area"))
+    neighborhoods = sorted(
+        [neighborhood.title() for neighborhood, locale in NEIGHBORHOODS.items() if locale["abrv"] == area]
+    )
+    return render_template("api/neighborhoods.html", neighborhoods=neighborhoods)
 
 
 @app.route("/projects")
