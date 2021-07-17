@@ -5,8 +5,8 @@
   {%- for repo in content.repos %}
   <li class="py-2 w-full md:odd:pr-6 md:w-1/2">
     <article class="bg-white duration-300 flex flex-col flex-wrap h-full p-4 rounded-lg shadow-xl transform transition hover:scale-105 hover:shadow-2xl md:p-6">
-      <h2 class="mb-4"><a class="github-link font-medium leading-8 text-2xl md:leading-10 md:text-4xl text-black hover:text-yellow-600" href="{{ repo.url }}" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ repo.name }}</a></h2>
-      <p class="flex-grow leading-7 mb-4 text-gray-600 text-lg md:leading-7 md:mb6 md:text-xl">{{ repo.description }}</p>
+      <h2 class="mb-4"><a class="github-link font-medium leading-8 text-2xl md:leading-10 md:text-3xl lg:text-4xl text-black hover:text-yellow-600" href="{{ repo.url }}" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ repo.name }}</a></h2>
+      <p class="flex-grow leading-7 mb-4 text-gray-600 text-md md:text-lg lg:text-xl md:leading-7 md:mb6">{{ repo.description }}</p>
       <ul class="flex flex-wrap leading-7 text-gray-500 text-sm md:leading-7">
         <li class="inline-flex mr-2 sm:mr-3">
           <span class="iconify github-stars github-icon" data-icon="octicon:star-16" data-inline="true"></span>

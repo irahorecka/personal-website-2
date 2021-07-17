@@ -85,18 +85,18 @@ def validate_request_args(request_args):
     return (True, v.normalized(request_args))
 
 
-def filter_requests_query(session, request_args):
+def filter_requests_query(model, request_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
     in `request_args`."""
-    query = filter_categorical(session, request_args)
-    return filter_scalar(session, query, request_args)
+    query = filter_categorical(model.query, model, request_args)
+    return filter_scalar(query, model, request_args)
 
 
-def filter_categorical(session, request_args):
+def filter_categorical(query, model, request_args):
     """Filters categorical attributes of the requests query.
     E.g. `neighborhood=fremont / union city / newark`."""
     categorical_filter = {
-        # ID could be queried faster using session.query.get(id), but let's make it simple
+        # ID could be queried faster using model.query.get(id), but let's make it simple
         # and it's not a demanding query parameter.
         "id": request_args["id"],
         "area": request_args["area"],
@@ -106,20 +106,19 @@ def filter_categorical(session, request_args):
         "laundry": request_args["laundry"],
         "parking": request_args["parking"],
     }
-    query = session.query
     for attr, value in categorical_filter.items():
-        query = query.filter(getattr(session, attr).like("%%%s%%" % value))
+        query = query.filter(getattr(model, attr).like("%%%s%%" % value))
     return query
 
 
-def filter_scalar(session, query, request_args):
+def filter_scalar(query, model, request_args):
     """Filters scalar attributes of the requests query.
     E.g. `min_price=1000`."""
     return (
-        query.filter(session.bedrooms >= request_args["min_bedrooms"])
-        .filter(session.bedrooms <= request_args["max_bedrooms"])
-        .filter(session.ft2 >= request_args["min_ft2"])
-        .filter(session.ft2 <= request_args["max_ft2"])
-        .filter(session.price >= request_args["min_price"])
-        .filter(session.price <= request_args["max_price"])
+        query.filter(model.bedrooms >= request_args["min_bedrooms"])
+        .filter(model.bedrooms <= request_args["max_bedrooms"])
+        .filter(model.ft2 >= request_args["min_ft2"])
+        .filter(model.ft2 <= request_args["max_ft2"])
+        .filter(model.price >= request_args["min_price"])
+        .filter(model.price <= request_args["max_price"])
     )

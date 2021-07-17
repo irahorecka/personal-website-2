@@ -39,6 +39,7 @@ def write_craigslist_housing(site, areas=("null",)):
             rent_period=post.get("rent_period", ""),
             url=post.get("url", ""),
             misc=";".join(post.get("misc", [])),
+            _title_neighborhood=f'{post.get("neighborhood", "")}{post.get("title", "")}',
         )
         for post in craigslist_housing
     ]
@@ -56,8 +57,8 @@ def fetch_craigslist_apa(*args, **kwargs):
     for apa in yield_apa(*args, **kwargs):
         for post in apa.search_detail():
             post_id = int(post["id"])
-            # Performs checks to ensure no duplication of posts in database.
-            if post_id in post_id_ref or CraigslistHousing.query.get(post_id):
+            # Performs checks to ensure no duplication of post id in current search.
+            if post_id in post_id_ref:
                 continue
             post_id_ref.add(post_id)
             posts.append(post)

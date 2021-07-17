@@ -1,6 +1,7 @@
 """
 """
 
+from irahorecka.python.api.craigslisthousing.clean import clean_craigslist_housing
 from irahorecka.python.api.craigslisthousing.read import read_craigslist_housing
 from irahorecka.python.api.craigslisthousing.write import write_craigslist_housing
 from irahorecka.python.api.craigslisthousing.utils import read_neighborhoods, write_neighborhoods

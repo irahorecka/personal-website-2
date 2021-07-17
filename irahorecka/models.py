@@ -59,6 +59,7 @@ class CraigslistHousing(db.Model):
     rent_period = db.Column(db.String(80))
     url = db.Column(db.String(120))
     misc = db.Column(db.String(240))
+    _title_neighborhood = db.Column(db.String(240))
 
     def __repr__(self):
         return f"CraigslistHousing(id={self.id})"

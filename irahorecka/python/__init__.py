@@ -2,6 +2,7 @@
 """
 
 from irahorecka.python.api import (
+    clean_craigslist_housing,
     read_craigslist_housing,
     write_craigslist_housing,
     read_neighborhoods,
