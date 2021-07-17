@@ -47,8 +47,10 @@ def home():
 def api_cl_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
     try:
+        # Read up to 1,000,000 items if no limit filter is provided.
         params = {**{"site": site}, **request.args.to_dict()}
-        return jsonify(list(read_craigslist_housing(params)))
+        limit = int(request.args.get("limit", "1_000_000"))
+        return jsonify(list(read_craigslist_housing(params, limit)))
     except ValueError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -59,7 +61,8 @@ def api_cl_site_area(site, area):
     and area."""
     try:
         params = {**{"site": site, "area": area}, **request.args.to_dict()}
-        return jsonify(list(read_craigslist_housing(params)))
+        # Only allow 100 posts to display
+        return jsonify(list(read_craigslist_housing(params, 100)))
     except ValueError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -90,10 +93,18 @@ def api_docs():
 
 @app.route("/api/neighborhoods", methods=["POST"])
 def api_neighborhoods():
-    area_key = SFBAY_AREA_KEY.get(request.form.get("area"))
-    print("HAHAHA")
-    neighborhoods = sorted([neighborhood.title() for neighborhood, area in NEIGHBORHOODS.items() if area == area_key])
+    area_key = SFBAY_AREA_KEY.get(request.form.get("area", ""))
+    neighborhoods = sorted([neighborhood for neighborhood, area in NEIGHBORHOODS.items() if area == area_key])
     return render_template("api/neighborhoods.html", neighborhoods=neighborhoods)
+
+
+@app.route("/api/submit", methods=["POST"])
+def api_table():
+    params = {key: value.lower() for key, value in request.form.items() if value and value not in ["-"]}
+    if params.get("area"):
+        params["area"] = SFBAY_AREA_KEY[params["area"].title()]
+    posts = list(read_craigslist_housing(params, limit=100))
+    return render_template("api/table.html", posts=posts)
 
 
 @app.route("/projects")

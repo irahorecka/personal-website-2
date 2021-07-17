@@ -6,16 +6,15 @@ from datetime import datetime
 from irahorecka.models import CraigslistHousing
 
 
-def read_craigslist_housing(requests_args):
-    """Reads and returns SF Bay Area Craigslist Housing posts as a list of dictionaries."""
+def read_craigslist_housing(requests_args, limit):
+    """Reads and returns SF Bay Area Craigslist Housing posts as a list of dictionaries
+    up to the provided limit."""
 
     def nullify_empty_value(value):
         """Returns None for a non-truthful value (e.g. 0, "", False)."""
         return None if not value else value
 
     filtered_housing_query = filter_requests_query(CraigslistHousing, requests_args)
-    # Read up to 1,000,000 items if no limit filter is provided.
-    limit = int(requests_args.get("limit", "1_000_000"))
     for idx, post in enumerate(filtered_housing_query):
         if idx == limit:
             return
