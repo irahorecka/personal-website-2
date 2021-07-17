@@ -3,10 +3,13 @@
 
 from datetime import datetime
 
+from cerberus import Validator
+
+from irahorecka.exceptions import ValidationError
 from irahorecka.models import CraigslistHousing
 
 
-def read_craigslist_housing(requests_args, limit):
+def read_craigslist_housing(request_args):
     """Reads and returns SF Bay Area Craigslist Housing posts as a list of dictionaries
     up to the provided limit."""
 
@@ -14,7 +17,13 @@ def read_craigslist_housing(requests_args, limit):
         """Returns None for a non-truthful value (e.g. 0, "", False)."""
         return None if not value else value
 
-    filtered_housing_query = filter_requests_query(CraigslistHousing, requests_args)
+    v_status, v_args = validate_request_args(request_args)
+    # Raise ValidationError to caller if parsing of request args failed
+    if not v_status:
+        raise ValidationError(v_args)
+
+    limit = v_args["limit"]
+    filtered_housing_query = filter_requests_query(CraigslistHousing, v_args)
     for idx, post in enumerate(filtered_housing_query):
         if idx == limit:
             return
@@ -50,27 +59,52 @@ def read_craigslist_housing(requests_args, limit):
         }
 
 
-def filter_requests_query(session, requests_args):
+def validate_request_args(request_args):
+    # Declare schema within function - usually single query, single validation
+    # Avoid worrying about performance impact from declaration
+    schema = {
+        "id": {"type": "string", "coerce": str, "default": ""},
+        # Cast to float then try to validate as integer.
+        "limit": {"type": "integer", "coerce": (float, int), "default": 100_000},
+        "area": {"type": "string", "default": ""},
+        "site": {"type": "string", "default": ""},
+        "neighborhood": {"type": "string", "default": ""},
+        "housing_type": {"type": "string", "default": ""},
+        "laundry": {"type": "string", "default": ""},
+        "parking": {"type": "string", "default": ""},
+        "min_bedrooms": {"type": "integer", "coerce": (float, int), "default": 0},
+        "max_bedrooms": {"type": "integer", "coerce": (float, int), "default": 10},
+        "min_ft2": {"type": "integer", "coerce": (float, int), "default": 0},
+        "max_ft2": {"type": "integer", "coerce": (float, int), "default": 1_000_000},
+        "min_price": {"type": "integer", "coerce": (float, int), "default": 0},
+        "max_price": {"type": "integer", "coerce": (float, int), "default": 100_000},
+    }
+    v = Validator(schema)
+    if not v.validate(request_args):
+        return (False, v.errors)
+    return (True, v.normalized(request_args))
+
+
+def filter_requests_query(session, request_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
-    in `requests_args`."""
-    query = filter_categorical(session, requests_args)
-    return filter_scalar(session, query, requests_args)
+    in `request_args`."""
+    query = filter_categorical(session, request_args)
+    return filter_scalar(session, query, request_args)
 
 
-def filter_categorical(session, requests_args):
+def filter_categorical(session, request_args):
     """Filters categorical attributes of the requests query.
     E.g. `neighborhood=fremont / union city / newark`."""
     categorical_filter = {
         # ID could be queried faster using session.query.get(id), but let's make it simple
         # and it's not a demanding query parameter.
-        "id": requests_args.get("id", ""),
-        "area": requests_args.get("area", ""),
-        "site": requests_args.get("site", ""),
-        "neighborhood": requests_args.get("neighborhood", ""),
-        "housing_type": requests_args.get("housing_type", ""),
-        "bedrooms": requests_args.get("bedrooms", ""),
-        "laundry": requests_args.get("laundry", ""),
-        "parking": requests_args.get("parking", ""),
+        "id": request_args["id"],
+        "area": request_args["area"],
+        "site": request_args["site"],
+        "neighborhood": request_args["neighborhood"],
+        "housing_type": request_args["housing_type"],
+        "laundry": request_args["laundry"],
+        "parking": request_args["parking"],
     }
     query = session.query
     for attr, value in categorical_filter.items():
@@ -78,22 +112,14 @@ def filter_categorical(session, requests_args):
     return query
 
 
-def filter_scalar(session, query, requests_args):
+def filter_scalar(session, query, request_args):
     """Filters scalar attributes of the requests query.
     E.g. `min_price=1000`."""
-    scalar_filter = {
-        "min_bedrooms": float(requests_args.get("min_bedrooms", "0")),
-        "max_bedrooms": float(requests_args.get("max_bedrooms", "100")),
-        "min_ft2": float(requests_args.get("min_ft2", "0")),
-        "max_ft2": float(requests_args.get("max_ft2", "1000000")),
-        "min_price": float(requests_args.get("min_price", "0")),
-        "max_price": float(requests_args.get("max_price", "100000")),
-    }
     return (
-        query.filter(session.bedrooms >= scalar_filter["min_bedrooms"])
-        .filter(session.bedrooms <= scalar_filter["max_bedrooms"])
-        .filter(session.ft2 >= scalar_filter["min_ft2"])
-        .filter(session.ft2 <= scalar_filter["max_ft2"])
-        .filter(session.price >= scalar_filter["min_price"])
-        .filter(session.price <= scalar_filter["max_price"])
+        query.filter(session.bedrooms >= request_args["min_bedrooms"])
+        .filter(session.bedrooms <= request_args["max_bedrooms"])
+        .filter(session.ft2 >= request_args["min_ft2"])
+        .filter(session.ft2 <= request_args["max_ft2"])
+        .filter(session.price >= request_args["min_price"])
+        .filter(session.price <= request_args["max_price"])
     )

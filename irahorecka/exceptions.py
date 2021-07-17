@@ -23,3 +23,9 @@ class InvalidUsage(Exception):
         rv["status"] = self.status_text
         rv["message"] = self.message
         return rv
+
+
+class ValidationError(Exception):
+    """Validation of request args failed."""
+
+    pass

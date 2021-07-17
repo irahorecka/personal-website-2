@@ -10,7 +10,7 @@ from flask import render_template, request, jsonify
 
 from irahorecka import app
 from irahorecka.config import GITHUB_REPOS
-from irahorecka.exceptions import InvalidUsage
+from irahorecka.exceptions import InvalidUsage, ValidationError
 from irahorecka.python import (
     get_header_text,
     get_body_text,
@@ -46,12 +46,11 @@ def home():
 @app.route("/housing/<site>", subdomain="api")
 def api_cl_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
+    # Read up to 1,000,000 items if no limit filter is provided.
+    params = {**{"site": site}, **request.args.to_dict()}
     try:
-        # Read up to 1,000,000 items if no limit filter is provided.
-        params = {**{"site": site}, **request.args.to_dict()}
-        limit = int(request.args.get("limit", "1_000_000"))
-        return jsonify(list(read_craigslist_housing(params, limit)))
-    except ValueError as e:
+        return jsonify(list(read_craigslist_housing(params)))
+    except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
 
@@ -59,11 +58,11 @@ def api_cl_site(site):
 def api_cl_site_area(site, area):
     """REST-like API for Craigslist housing - querying with Craigslist site
     and area."""
+    params = {**{"site": site, "area": area}, **request.args.to_dict()}
     try:
-        params = {**{"site": site, "area": area}, **request.args.to_dict()}
         # Only allow 100 posts to display
-        return jsonify(list(read_craigslist_housing(params, 100)))
-    except ValueError as e:
+        return jsonify(list(read_craigslist_housing(params)))
+    except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
 
@@ -101,9 +100,17 @@ def api_neighborhoods():
 @app.route("/api/submit", methods=["POST"])
 def api_table():
     params = {key: value.lower() for key, value in request.form.items() if value and value not in ["-"]}
+    params["limit"] = 100
     if params.get("area"):
         params["area"] = SFBAY_AREA_KEY[params["area"].title()]
-    posts = list(read_craigslist_housing(params, limit=100))
+    try:
+        posts = list(read_craigslist_housing(params))
+    except ValidationError as e:
+        raise InvalidUsage(str(e).capitalize(), status_code=400) from e
+    # Replace 'None' with '-'
+    for post in posts:
+        if not post["bedrooms"]:
+            post["bedrooms"] = "-"
     return render_template("api/table.html", posts=posts)
 
 
