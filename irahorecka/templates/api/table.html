@@ -1,0 +1,26 @@
+{% if posts|length > 0 %}
+<div class="h-64 lg:h-96 fixed-head border-2 border-gray-200 overflow-y-auto mt-12">
+  <table class="table-auto border-separate w-full mx-auto">
+    <thead>
+      <tr>
+        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Title</th>
+        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Price</th>
+        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Bedrooms</th>
+        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Value</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for post in posts %}
+      <tr class="bg-white lg:hover:bg-gray-100 flex flex-no-wrap flex-row table-row">
+        <td class="w-full p-3 text-gray-800 text-left border border-b block table-cell static"><a href="{{ post.url }}" class="text-blue-600 hover:text-blue-800" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ post.title }}</a></td>
+        <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">{{ post.price }}</td>
+        <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">{{ post.bedrooms }}</td>
+        <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">
+          <span class="rounded bg-green-400 py-1 px-3 text-xs font-bold">Yes</span>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
