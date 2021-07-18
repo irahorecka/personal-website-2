@@ -127,7 +127,8 @@ def api_table():
         if not post["score"]:
             post["score"] = 1.0
         post["score_color"] = get_score_color(post["score"])
-    return render_template("api/table.html", posts=posts)
+
+    return render_template("api/table.html", posts=sorted(posts, key=lambda x: x["score"]))
 
 
 def get_score_color(score):
