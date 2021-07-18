@@ -30,6 +30,7 @@ nodeenv==1.6.0
 numpy==1.21.0
 pathspec==0.8.1
 pre-commit==2.13.0
+psycopg2==2.9.1
 pycparser==2.20
 pycraigslist==0.5.3
 PyGithub==1.55

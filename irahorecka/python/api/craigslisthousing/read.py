@@ -4,6 +4,7 @@
 from datetime import datetime
 
 from cerberus import Validator
+from sqlalchemy.sql.expression import null
 
 from irahorecka.exceptions import ValidationError
 from irahorecka.models import CraigslistHousing
@@ -56,6 +57,7 @@ def read_craigslist_housing(request_args):
             "rent_period": nullify_empty_value(post.rent_period),
             "parking": nullify_empty_value(post.parking),
             "misc": post.misc.split(";"),
+            "score": nullify_empty_value(post.score),
         }
 
 
@@ -63,7 +65,7 @@ def validate_request_args(request_args):
     # Declare schema within function - usually single query, single validation
     # Avoid worrying about performance impact from declaration
     schema = {
-        "id": {"type": "string", "coerce": str, "default": ""},
+        "id": {"type": "integer", "coerce": int, "default": 0},
         # Cast to float then try to validate as integer.
         "limit": {"type": "integer", "coerce": (float, int), "default": 100_000},
         "area": {"type": "string", "default": ""},
@@ -85,40 +87,39 @@ def validate_request_args(request_args):
     return (True, v.normalized(request_args))
 
 
-def filter_requests_query(model, request_args):
+def filter_requests_query(model, validated_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
-    in `request_args`."""
-    query = filter_categorical(model.query, model, request_args)
-    return filter_scalar(query, model, request_args)
+    in `validated_args`."""
+    if validated_args.get("id"):
+        return (model.query.get(validated_args["id"]),)
+    query = filter_categorical(model.query, model, validated_args)
+    return filter_scalar(query, model, validated_args)
 
 
-def filter_categorical(query, model, request_args):
+def filter_categorical(query, model, validated_args):
     """Filters categorical attributes of the requests query.
     E.g. `neighborhood=fremont / union city / newark`."""
     categorical_filter = {
-        # ID could be queried faster using model.query.get(id), but let's make it simple
-        # and it's not a demanding query parameter.
-        "id": request_args["id"],
-        "area": request_args["area"],
-        "site": request_args["site"],
-        "neighborhood": request_args["neighborhood"],
-        "housing_type": request_args["housing_type"],
-        "laundry": request_args["laundry"],
-        "parking": request_args["parking"],
+        "area": validated_args["area"],
+        "site": validated_args["site"],
+        "neighborhood": validated_args["neighborhood"],
+        "housing_type": validated_args["housing_type"],
+        "laundry": validated_args["laundry"],
+        "parking": validated_args["parking"],
     }
     for attr, value in categorical_filter.items():
         query = query.filter(getattr(model, attr).like("%%%s%%" % value))
     return query
 
 
-def filter_scalar(query, model, request_args):
+def filter_scalar(query, model, validated_args):
     """Filters scalar attributes of the requests query.
     E.g. `min_price=1000`."""
     return (
-        query.filter(model.bedrooms >= request_args["min_bedrooms"])
-        .filter(model.bedrooms <= request_args["max_bedrooms"])
-        .filter(model.ft2 >= request_args["min_ft2"])
-        .filter(model.ft2 <= request_args["max_ft2"])
-        .filter(model.price >= request_args["min_price"])
-        .filter(model.price <= request_args["max_price"])
+        query.filter(model.bedrooms >= validated_args["min_bedrooms"])
+        .filter(model.bedrooms <= validated_args["max_bedrooms"])
+        .filter(model.ft2 >= validated_args["min_ft2"])
+        .filter(model.ft2 <= validated_args["max_ft2"])
+        .filter(model.price >= validated_args["min_price"])
+        .filter(model.price <= validated_args["max_price"])
     )

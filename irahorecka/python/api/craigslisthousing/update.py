@@ -8,6 +8,7 @@ Criteria:
 import datetime
 import math
 
+from sqlalchemy.sql import func, and_
 import numpy as np
 
 from irahorecka.models import db, CraigslistHousing
@@ -28,14 +29,26 @@ def rm_old_posts(model, days=7):
 
 def rm_duplicate_posts(model):
     # Filter id's where `model._title_neighborhood` is unique
-    query = model.query.with_entities(model.id).group_by(model._title_neighborhood)
+    query = model.query.with_entities(model.id).distinct(model._title_neighborhood)
     del_query = model.__table__.delete().where(model.id.not_in(query))
     # Delete duplicate posts
     db.session.execute(del_query)
     db.session.commit()
 
 
-def calculate_post_score(post):
+def write_price_per_area():
+    site = "sfbay"
+    areas = ["eby", "nby", "sby", "sfc", "pen"]  # , "scz"]
+    CraigslistHousing.query.filter(CraigslistHousing.bedrooms == 0).update({CraigslistHousing.bedrooms: 1})
+    for area in areas:
+        data = get_price_per_ft2_db(site, area)
+        CraigslistHousing.query.filter(and_(CraigslistHousing.area == area, CraigslistHousing.ft2 != 0)).update(
+            {CraigslistHousing.score: calculate_post_score(data, CraigslistHousing)}
+        )
+    db.session.commit()
+
+
+def calculate_post_score(data, post):
     # Take 0.05 - 0.95 percentile usd/sqft all of bay area
     # Take 0.05 - 0.95 percentile usd/sqft within area
     # Calculate avg, stdDEV for both, area value has 0.55 weight, all bay area has 0.35 rate
@@ -43,18 +56,17 @@ def calculate_post_score(post):
     # 0.55 * (1 + (0.55 * stdev_area)) + 0.35 * (1 + (0.35 * stdev_bayarea)) + 0.1 * (1 + math.log(num_bedrooms))
     # NOTE - purely average post should equate to a score of 1, meaning avg price in bay area, area, and 1 bedroom
     # LESS THAN 1, GOOD : MORE THAN 1, BAD
-    data = get_price_per_ft2_db(post["area"])
-    price_per_ft2 = post["price"] / post["ft2"]
+    price_per_ft2 = post.price / post.ft2
     site_std = (price_per_ft2 - data["price_ft2_avg_site"]) / data["price_ft2_std_site"]
     area_std = (price_per_ft2 - data["price_ft2_avg_area"]) / data["price_ft2_std_area"]
     site_weight = 0.35 * (1 + (0.35 * site_std))
     area_weight = 0.55 * (1 + (0.55 * area_std))
-    bedroom_weight = 0.1 * (1 - math.log(post["bedrooms"]))
+    bedroom_weight = 0.1 * func.log(post.bedrooms)
     return site_weight + area_weight + bedroom_weight
 
 
-def get_price_per_ft2_db(area):
-    price_per_ft2_site = get_price_per_ft2(get_valid_posts(CraigslistHousing))
+def get_price_per_ft2_db(site, area):
+    price_per_ft2_site = get_price_per_ft2(get_valid_posts(CraigslistHousing).filter(CraigslistHousing.site == site))
     price_per_ft2_area = get_price_per_ft2(get_valid_posts(CraigslistHousing).filter(CraigslistHousing.area == area))
     return {
         "price_ft2_avg_site": round(np.average(price_per_ft2_site), 3),
@@ -79,4 +91,4 @@ def get_ft2_price_within_percentile(query, perc_min, perc_max):
 
 
 def get_valid_posts(model):
-    return model.query.with_entities(model.ft2, model.price, model.area).filter(model.ft2.isnot(0) & model.ft2.isnot(0))
+    return model.query.with_entities(model.ft2, model.price, model.area).filter(and_(model.ft2 != 0, model.price != 0))

@@ -37,14 +37,14 @@ class RepoLanguage(db.Model):
 class CraigslistHousing(db.Model):
     __tablename__ = "craigslisthousing"
     # `id` is the Craigslist's post ID
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.BigInteger, primary_key=True)
     site = db.Column(db.String(8))
     area = db.Column(db.String(8))
     repost_of = db.Column(db.String(20))
     last_updated = db.Column(db.DateTime)
-    title = db.Column(db.String(120))
-    neighborhood = db.Column(db.String(120))
-    address = db.Column(db.String(120))
+    title = db.Column(db.String(240))
+    neighborhood = db.Column(db.String(240))
+    address = db.Column(db.String(240))
     lat = db.Column(db.Float)
     lon = db.Column(db.Float)
     price = db.Column(db.Integer)
@@ -57,8 +57,9 @@ class CraigslistHousing(db.Model):
     laundry = db.Column(db.String(80))
     parking = db.Column(db.String(80))
     rent_period = db.Column(db.String(80))
-    url = db.Column(db.String(120))
-    misc = db.Column(db.String(240))
+    url = db.Column(db.String(240))
+    misc = db.Column(db.String(480))
+    score = db.Column(db.Float)
     _title_neighborhood = db.Column(db.String(240))
 
     def __repr__(self):

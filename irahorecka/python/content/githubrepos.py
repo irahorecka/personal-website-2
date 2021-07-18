@@ -49,8 +49,8 @@ def write_github_repos(github_token):
     """Write `GITHUB_TOKEN` user's GitHub repos to database."""
     # Drop content in tables - don't bother updating as hard reset for a small
     # table like this is preferable.
-    GitHubRepo.query.delete()
     RepoLanguage.query.delete()
+    GitHubRepo.query.delete()
     # Fetch repos first to allow fastest write to db.
     repos = fetch_repos(github_token)
     # Don't write to database if repos fetch failed.

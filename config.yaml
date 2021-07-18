@@ -1,5 +1,5 @@
 # Indicates whether to host application purely locally - this allows for use of subdomains
-localhost: true
+localhost: false
 
 # Local IP address to host web app
 local-ip:

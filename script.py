@@ -3,12 +3,14 @@
 from os import write
 from irahorecka.models import db, CraigslistHousing
 from irahorecka.python.api.craigslisthousing.utils import read_neighborhoods, write_neighborhoods
-from irahorecka.python.api.craigslisthousing.update import clean_craigslist_housing, calculate_post_score
+from irahorecka.python.api.craigslisthousing.update import (
+    clean_craigslist_housing,
+    calculate_post_score,
+    write_price_per_area,
+)
 
 if __name__ == "__main__":
     # print(read_neighborhoods())
-    # write_neighborhoods(db.session, CraigslistHousing)
-    # clean_craigslist_housing()
-    sample = {"price": 2850, "ft2": 800, "bedrooms": 2, "area": "sfc"}
-    for _ in range(100):
-        print("SCORE:", round(calculate_post_score(sample), 3))
+    write_neighborhoods(db.session, CraigslistHousing)
+    clean_craigslist_housing()
+    write_price_per_area()
