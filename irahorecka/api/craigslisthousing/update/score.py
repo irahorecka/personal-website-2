@@ -10,16 +10,22 @@ from irahorecka.models import db, CraigslistHousing
 def write_craigslist_housing_score(site, areas):
     """ENTRY POINT: Assigns and writes Craigslist housing value scores to every post."""
     # Scoring is ONLY applied to posts with a non-zero ft2 value.
+    query_site = CraigslistHousing.query.filter(CraigslistHousing.site == site)
+    # For scoring purposes: converts posts with 0 bedrooms to have a traceable bedroom count of 0.99
+    query_site.filter(CraigslistHousing.bedrooms == 0).update({CraigslistHousing.bedrooms: 0.99})
+
     for area in areas:
         data = get_price_per_ft2_db(site, area)
         query_area = CraigslistHousing.query.filter(and_(CraigslistHousing.ft2 != 0, CraigslistHousing.area == area))
-        query_area.update({CraigslistHousing.score: calculate_post_score(data, query_area, CraigslistHousing)})
-    query_site = CraigslistHousing.query.filter(CraigslistHousing.site == site)
+        query_area.update({CraigslistHousing.score: calculate_post_score(data, CraigslistHousing)})
+
+    # Reverts posts with 0.99 bedrooms to have its original value of 0
+    query_site.filter(CraigslistHousing.bedrooms == 0.99).update({CraigslistHousing.bedrooms: 0})
     normalize_score(query_site, CraigslistHousing)
     db.session.commit()
 
 
-def calculate_post_score(data, query, model):
+def calculate_post_score(data, model):
     """Calculates value score for every post. Read description below for calc breakdown:
     - Calculate AVG, STDEV price/sqft for posts within site and area.
         - Area value is multiplied with 0.55 coefficient, Site value with 0.35 coefficient.
@@ -28,15 +34,13 @@ def calculate_post_score(data, query, model):
         = -1 * (0.55 * (1 + (0.55 * stdev_within_area)) + 0.35 * (1 + (0.35 * stdev_within_bayarea)) + 0.1 * (1 + math.log(num_bedrooms)))
     - Purely average model should equate to a score of 1.0, meaning average price within Site, Area, and has 1 bedroom.
     - Score more than 1.0 is GOOD, less than 1.0 is BAD."""
-    # Converts posts with non-zero ft2 and 0 bedrooms to have 1 bedroom - cannot take log of 0
-    query.filter(model.bedrooms == 0).update({model.bedrooms: 1})
     price_per_ft2 = model.price / model.ft2
     site_std = (price_per_ft2 - data["price_ft2_avg_site"]) / data["price_ft2_std_site"]
     area_std = (price_per_ft2 - data["price_ft2_avg_area"]) / data["price_ft2_std_area"]
-
     site_weight = 0.35 * (1 + (0.35 * site_std))
     area_weight = 0.55 * (1 + (0.55 * area_std))
     bedroom_weight = 0.1 * func.log(model.bedrooms)
+
     return -1 * (site_weight + area_weight + bedroom_weight)
 
 
@@ -93,8 +97,7 @@ def normalize_score(query, model):
     # Get query with model.score within min_q_score and max_q_score
     query_range = query_num.filter(and_(model.score >= min_q_score, model.score <= max_q_score))
     # Equation for normalizing score
-    # = (((score - low) / (high - low)) * (2 * max_q_score)) + min_q_score
-    # (((model.score - min_q_score) / (max_q_score - min_q_score)) * (2 * max_norm_score)) + min_norm_score
+    # = (((score - low_score) / (high_score - low_score)) * (2 * max_norm_score)) + min_norm_score
     query_range.update(
         {
             model.score: ((model.score - min_q_score) / (max_q_score - min_q_score)) * (2 * max_norm_score)

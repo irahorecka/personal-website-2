@@ -49,7 +49,7 @@ class CraigslistHousing(db.Model):
     lon = db.Column(db.Float)
     price = db.Column(db.Integer)
     housing_type = db.Column(db.String(80))
-    bedrooms = db.Column(db.Integer)
+    bedrooms = db.Column(db.Float)
     flooring = db.Column(db.String(80))
     is_furnished = db.Column(db.Boolean)
     no_smoking = db.Column(db.Boolean)

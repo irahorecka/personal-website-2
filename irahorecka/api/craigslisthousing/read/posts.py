@@ -2,6 +2,7 @@
 """
 
 from datetime import datetime
+from typing import cast
 
 from cerberus import Validator
 
@@ -16,6 +17,13 @@ def read_craigslist_housing(request_args):
     def nullify_empty_value(value):
         """Returns None for a non-truthful value (e.g. 0, "", False)."""
         return None if not value else value
+
+    def cast(dtype, value, fallback):
+        """Attempts to cast `dtype` to `value`. Returns `fallback` if failed."""
+        try:
+            return dtype(value)
+        except (ValueError, TypeError):
+            return fallback
 
     v_status, v_args = validate_request_args(request_args)
     # Raise ValidationError to caller if parsing of request args failed
@@ -42,11 +50,9 @@ def read_craigslist_housing(request_args):
             "lon": nullify_empty_value(post.lon),
             # Post
             "title": post.title,
-            "price": "$" + str(nullify_empty_value(post.price))
-            if nullify_empty_value(post.price) is not None
-            else None,
+            "price": f"${cast(str, post.price, '')}",
             "housing_type": nullify_empty_value(post.housing_type),
-            "bedrooms": nullify_empty_value(post.bedrooms),
+            "bedrooms": cast(int, post.bedrooms, None),
             "flooring": nullify_empty_value(post.flooring),
             # `is_furnished` and `no_smoking` are booleans - nullify if False; usually indicative of missing data.
             "is_furnished": nullify_empty_value(post.is_furnished),
@@ -56,7 +62,7 @@ def read_craigslist_housing(request_args):
             "rent_period": nullify_empty_value(post.rent_period),
             "parking": nullify_empty_value(post.parking),
             "misc": post.misc.split(";"),
-            "score": int(post.score),  # Guaranteeing every `post.score` is a numeric
+            "score": cast(int, post.score, 0),
         }
 
 
