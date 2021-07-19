@@ -5,7 +5,7 @@
       <tr>
         <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Title</th>
         <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Price</th>
-        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Bedrooms</th>
+        <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">BDRMs</th>
         <th class="fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Score</th>
       </tr>
     </thead>
@@ -16,7 +16,7 @@
         <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">{{ post.price }}</td>
         <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">{{ post.bedrooms }}</td>
         <td class="w-full p-3 text-gray-800 text-center border border-b block table-cell static">
-          <span class="rounded {{ post.score_color }} border py-1 px-3 text-xs font-bold">{{ post.score|round(1) }}</span>
+          <span class="rounded {{ post.score_color }} border py-1 px-3 text-xs font-bold">{{ post.score }}</span>
         </td>
       </tr>
       {% endfor %}

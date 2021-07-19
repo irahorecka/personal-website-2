@@ -21,18 +21,10 @@ from irahorecka.python import (
     NEIGHBORHOODS,
     SFBAY_AREA_KEY,
 )
+from irahorecka.utils import tidy_post
 
 with open(Path(__file__).absolute().parent.parent / "config.yaml", "r") as config:
     GITHUB_REPOS = yaml.safe_load(config)["github-repos"]
-SCORE_COLORS = {
-    "very-poor": "bg-red-400",
-    "poor": "bg-red-300",
-    "mild-poor": "bg-red-200",
-    "neutral": "bg-white",
-    "mild-good": "bg-green-200",
-    "good": "bg-green-300",
-    "very-good": "bg-green-400",
-}
 
 
 @app.errorhandler(InvalidUsage)
@@ -122,30 +114,9 @@ def api_table():
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
     # Replace 'None' with '-' and 1.0 for bedrooms and scores, respectively
     for post in posts:
-        if not post["bedrooms"]:
-            post["bedrooms"] = "-"
-        if not post["score"]:
-            post["score"] = 1.0
-        post["score_color"] = get_score_color(post["score"])
-
-    return render_template("api/table.html", posts=sorted(posts, key=lambda x: x["score"]))
-
-
-def get_score_color(score):
-    if score == 1.0:
-        return SCORE_COLORS["neutral"]
-    if score > 2.0:
-        return SCORE_COLORS["very-poor"]
-    if score > 1.5:
-        return SCORE_COLORS["poor"]
-    if score > 1.0:
-        return SCORE_COLORS["mild-poor"]
-    if score < 0.4:
-        return SCORE_COLORS["very-good"]
-    if score < 0.7:
-        return SCORE_COLORS["good"]
-    if score < 1.0:
-        return SCORE_COLORS["mild-good"]
+        # Tidies dictionary through reference
+        tidy_post(post)
+    return render_template("api/table.html", posts=sorted(posts, key=lambda x: x["score"], reverse=True))
 
 
 @app.route("/projects")

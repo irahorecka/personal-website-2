@@ -4,11 +4,11 @@
 {% endblock js %}
 {% block content %}
 <div class="pt-12 sm:pt-16 lg:pt-20">
-  <h2 class="text-2xl font-bold">SF Bay Area Housing</h2>
+  <h2 class="text-2xl font-bold">SF Bay Area</h2>
   <form class="mt-8 w-full">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
       <label class="block">
-        <span class="text-gray-700">SF Bay Area region</span>
+        <span class="text-gray-700">Area</span>
         <select name="area" id="area" hx-post="/api/neighborhoods" hx-trigger="change, load" hx-target="#neighborhood" class="block w-full p-2 mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0">
           <option>-</option>
           <option>East Bay</option>
