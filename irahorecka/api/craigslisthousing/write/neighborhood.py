@@ -1,6 +1,6 @@
 """
 """
-from irahorecka.python.api.craigslist.utils import open_json, write_json, NEIGHBORHOOD_PATH
+from irahorecka.api.craigslisthousing.utils import open_json, write_json, NEIGHBORHOOD_PATH
 
 
 def write_neighborhoods(session, model):

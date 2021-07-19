@@ -1,8 +1,8 @@
 import os
 
 from irahorecka.models import db
-import irahorecka.python.content as ct
-import irahorecka.python.api as api
+import irahorecka.content as ct
+import irahorecka.api as api
 
 db.create_all()
 

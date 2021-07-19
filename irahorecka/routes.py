@@ -12,15 +12,8 @@ from flask import render_template, request, jsonify
 
 from irahorecka import app
 from irahorecka.exceptions import InvalidUsage, ValidationError
-from irahorecka.python import (
-    get_header_text,
-    get_body_text,
-    get_gallery_imgs,
-    read_github_repos,
-    read_craigslist_housing,
-    NEIGHBORHOODS,
-    SFBAY_AREA_KEY,
-)
+from irahorecka.api import read_craigslist_housing, NEIGHBORHOODS, SFBAY_AREA_KEY
+from irahorecka.content import get_header_text, get_body_text, get_gallery_imgs, read_github_repos
 from irahorecka.utils import tidy_post
 
 with open(Path(__file__).absolute().parent.parent / "config.yaml", "r") as config:
