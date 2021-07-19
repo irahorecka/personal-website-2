@@ -20,7 +20,7 @@ CONTENT = {
         },
     },
     "api": {
-        "header": {"first": "It's API time"},
+        "header": {"first": "Housing"},
         "body": {
             "first": "I enjoy writing API wrappers in Python. Have a look-see at some real-time Craigslist housing posts in the SF Bay Area. If I don't have text here the CSS is bonkers :("
         },
