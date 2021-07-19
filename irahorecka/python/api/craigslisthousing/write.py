@@ -46,7 +46,8 @@ def write_craigslist_housing(site, areas=("null",)):
     try:
         db.session.add_all(posts)
         db.session.commit()
-    except exc.IntegrityError:
+    except exc.IntegrityError as e:
+        print(e)
         db.session.rollback()
 
 
@@ -57,8 +58,8 @@ def fetch_craigslist_apa(*args, **kwargs):
     for apa in yield_apa(*args, **kwargs):
         for post in apa.search_detail():
             post_id = int(post["id"])
-            # Performs checks to ensure no duplication of post id in current search.
-            if post_id in post_id_ref:
+            # Performs checks to ensure no duplication of post id in current search and CraigslistHousing table.
+            if post_id in post_id_ref or CraigslistHousing.query.get(post_id):
                 continue
             post_id_ref.add(post_id)
             posts.append(post)
@@ -89,5 +90,5 @@ def yield_apa_filters():
     yield from [
         {"min_price": min_price, "max_price": max_price}
         for min_price, max_price in zip(range(0, 8000, 500), range(500, 8500, 500))
-        # for min_price, max_price in ((500, 1000),)
+        # for min_price, max_price in ((100, 1500),)
     ]

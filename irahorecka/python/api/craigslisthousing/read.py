@@ -57,11 +57,14 @@ def read_craigslist_housing(request_args):
             "rent_period": nullify_empty_value(post.rent_period),
             "parking": nullify_empty_value(post.parking),
             "misc": post.misc.split(";"),
-            "score": nullify_empty_value(post.score),
+            "score": int(post.score),  # Guaranteeing every `post.score` is a numeric
         }
 
 
 def validate_request_args(request_args):
+    """Validate request args for proper data types. Coerce into datatype if initial
+    validation passes, other wise send error code and failure message to be displayed
+    to client."""
     # Declare schema within function - usually single query, single validation
     # Avoid worrying about performance impact from declaration
     schema = {
