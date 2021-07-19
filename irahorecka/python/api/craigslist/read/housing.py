@@ -4,7 +4,6 @@
 from datetime import datetime
 
 from cerberus import Validator
-from sqlalchemy.sql.expression import null
 
 from irahorecka.exceptions import ValidationError
 from irahorecka.models import CraigslistHousing

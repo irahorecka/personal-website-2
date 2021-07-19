@@ -2,8 +2,8 @@
 
 from os import write
 from irahorecka.models import db, CraigslistHousing
-from irahorecka.python.api.craigslisthousing.utils import read_neighborhoods, write_neighborhoods
-from irahorecka.python.api.craigslisthousing.update import (
+from irahorecka.python.api import read_neighborhoods, write_neighborhoods
+from irahorecka.python.api import (
     clean_craigslist_housing,
     write_craigslist_housing_score,
 )

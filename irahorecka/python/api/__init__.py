@@ -1,10 +1,12 @@
 """
 """
 
-from irahorecka.python.api.craigslisthousing.update import clean_craigslist_housing, write_craigslist_housing_score
-from irahorecka.python.api.craigslisthousing.read import read_craigslist_housing
-from irahorecka.python.api.craigslisthousing.write import write_craigslist_housing
-from irahorecka.python.api.craigslisthousing.utils import read_neighborhoods, write_neighborhoods
+from irahorecka.python.api.craigslist.update.clean import clean_craigslist_housing
+from irahorecka.python.api.craigslist.update.score import write_craigslist_housing_score
+from irahorecka.python.api.craigslist.read.housing import read_craigslist_housing
+from irahorecka.python.api.craigslist.read.neighborhood import read_neighborhoods
+from irahorecka.python.api.craigslist.write.housing import write_craigslist_housing
+from irahorecka.python.api.craigslist.write.neighborhood import write_neighborhoods
 
 NEIGHBORHOODS = read_neighborhoods()
 SFBAY_AREA_KEY = {

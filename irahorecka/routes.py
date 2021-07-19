@@ -105,7 +105,8 @@ def api_neighborhoods():
 @app.route("/api/submit", methods=["POST"])
 def api_table():
     params = {key: value.lower() for key, value in request.form.items() if value and value not in ["-"]}
-    params["limit"] = 100
+    # 120 posts per query
+    params["limit"] = 120
     if params.get("area"):
         params["area"] = SFBAY_AREA_KEY[params["area"].title()]
     try:
