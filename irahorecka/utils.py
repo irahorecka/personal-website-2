@@ -10,8 +10,6 @@ SCORE_COLORS = {
 
 
 def tidy_post(post):
-    if not post["bedrooms"]:
-        post["bedrooms"] = "-"
     post["score_color"] = get_score_color(post["score"])
     return post
 
