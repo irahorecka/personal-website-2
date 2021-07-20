@@ -1,5 +1,5 @@
 {% if posts|length > 0 %}
-<div class="h-80 lg:h-96 fixed-head border-2 border-gray-200 overflow-y-auto mt-10">
+<div class="h-96 md:h-80 lg:h-96 fixed-head border-2 border-gray-200 overflow-y-auto mt-10">
   <table class="table-auto border-separate w-full mx-auto">
     <thead>
       <tr>
@@ -26,5 +26,9 @@
       {% endfor %}
     </tbody>
   </table>
+</div>
+{% else %}
+<div class="text-center mt-10 xs:m-16">
+  <div class="inline rounded bg-white border py-1 px-3 text-md font-bold m-auto">Not Available</div>
 </div>
 {% endif %}
