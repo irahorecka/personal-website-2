@@ -113,19 +113,13 @@ class Bedrooms(Score):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.summary = self._get_log_postvalue_summary()
-        # Penalty value to add to z-score due to post not having ft2 attribute
-        self.bdrm_penalty_z_score = 0.2
 
     def write_score(self, query_write):
         # Filter for posts where
         query_write = self._filter_query_for_log_calc(query_write)
         log_postvalue = func.log(self._postvalue_fn(func.log, self.model.price, self.model.bedrooms))
-        site_z_score = self.bdrm_penalty_z_score + (
-            (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
-        )
-        area_z_score = self.bdrm_penalty_z_score + (
-            (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
-        )
+        site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
+        area_z_score = (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
     def _get_log_postvalue_summary(self):
