@@ -46,8 +46,7 @@ def write_craigslist_housing(site, areas=("null",)):
     try:
         db.session.add_all(posts)
         db.session.commit()
-    except exc.IntegrityError as e:
-        print(e)
+    except exc.IntegrityError:
         db.session.rollback()
 
 
@@ -90,5 +89,5 @@ def yield_apa_filters():
     yield from [
         {"min_price": min_price, "max_price": max_price}
         for min_price, max_price in zip(range(0, 8000, 500), range(500, 8500, 500))
-        # for min_price, max_price in ((100, 1500),)
+        # for min_price, max_price in ((1000, 2000),)
     ]
