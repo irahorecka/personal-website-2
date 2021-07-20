@@ -2,6 +2,7 @@
 """
 
 import numpy as np
+from sqlalchemy.orm import query
 from sqlalchemy.sql import func, and_
 
 from irahorecka.models import db, CraigslistHousing
@@ -17,17 +18,19 @@ def write_craigslist_housing_score(site, areas):
     for area in areas:
         query_area = query_site.filter(CraigslistHousing.area == area)
         query_area_ft2 = query_area.filter(CraigslistHousing.ft2 != 0)
+
         # Calculate score for posts with price and ft2
         ft2 = Ft2(CraigslistHousing, query_site_ft2, query_area_ft2)
         ft2.write_score(query_area_ft2)
+        normalize_score(query_area_ft2, CraigslistHousing, -100, 100)
 
         # Calculate score for posts with price without ft2
         bedrooms = Bedrooms(CraigslistHousing, query_site, query_area)
         query_sans_ft2_area = query_area.filter(CraigslistHousing.ft2 == 0)
         bedrooms.write_score(query_sans_ft2_area)
+        normalize_score(query_sans_ft2_area, CraigslistHousing, -100, 100)
 
     # Reverts posts with 0.5 bedrooms to have its original value of 0
-    normalize_score(query_site, CraigslistHousing)
     CraigslistHousing.query.filter(CraigslistHousing.bedrooms == 0.5).update({CraigslistHousing.bedrooms: 0})
     db.session.commit()
 
@@ -41,14 +44,14 @@ class Base:
     def _calculate_post_score(self, site_z_score, area_z_score):
         """Calculates value score for every post. Read description below for calc breakdown:
         - Calculate AVG, STDEV price/sqft for posts within site and area.
-            - Area value is multiplied with 0.55 coefficient, Site value with 0.35 coefficient.
+            - Area value is multiplied with 0.6 coefficient, Site value with 0.3 coefficient.
             - If a post does not have sqft, give them neutral score (1.0).
         - Score equation:
-            = 0.55 * (1 - (0.55 * stdev_within_area)) + 0.35 * (1 - (0.35 * stdev_within_bayarea)) + 0.1 * (1 + math.log(num_bedrooms)) - 1
+            = 0.6 * (1 - (0.6 * stdev_within_area)) + 0.3 * (1 - (0.3 * stdev_within_bayarea)) + 0.1 * (1 + math.log(num_bedrooms)) - 1
         - Purely average post should equate to a score of 1.0, meaning average price within Site, Area, and has 1 bedroom.
         - Score more than 0 is GOOD, less than 0 is BAD."""
-        site_weight = 0.35 * (1 - (0.35 * site_z_score))
-        area_weight = 0.55 * (1 - (0.55 * area_z_score))
+        site_weight = 0.3 * (1 - (0.3 * site_z_score))
+        area_weight = 0.6 * (1 - (0.6 * area_z_score))
         bedroom_weight = 0.1 * (1 + func.log(self.model.bedrooms))
 
         # Subtract 1, which is the neutral score
@@ -68,7 +71,7 @@ class Base:
 class Ft2(Base):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.stats = self._get_log_price_per_ft2_stats()
+        self.stats = self._get_sqrt_price_per_ft2_stats()
 
     def write_score(self, query_write):
         price_per_ft2 = func.sqrt(self.model.price / self.model.ft2)
@@ -76,14 +79,14 @@ class Ft2(Base):
         area_z_score = (price_per_ft2 - self.stats["sqrt_price_ft2_avg_area"]) / self.stats["sqrt_price_ft2_std_area"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
-    def _get_log_price_per_ft2_stats(self):
-        price_per_ft2_site = self._get_sqrt_price_per_ft2(self.query_site)
-        price_per_ft2_area = self._get_sqrt_price_per_ft2(self.query_area)
+    def _get_sqrt_price_per_ft2_stats(self):
+        sqrt_price_per_ft2_site = self._get_sqrt_price_per_ft2(self.query_site)
+        sqrt_price_per_ft2_area = self._get_sqrt_price_per_ft2(self.query_area)
         return {
-            "sqrt_price_ft2_avg_site": np.average(price_per_ft2_site),
-            "sqrt_price_ft2_avg_area": np.average(price_per_ft2_area),
-            "sqrt_price_ft2_std_site": np.std(price_per_ft2_site),
-            "sqrt_price_ft2_std_area": np.std(price_per_ft2_area),
+            "sqrt_price_ft2_avg_site": np.average(np.square(sqrt_price_per_ft2_site)),
+            "sqrt_price_ft2_avg_area": np.average(np.square(sqrt_price_per_ft2_area)),
+            "sqrt_price_ft2_std_site": np.std(np.square(sqrt_price_per_ft2_site)),
+            "sqrt_price_ft2_std_area": np.std(np.square(sqrt_price_per_ft2_area)),
         }
 
     def _get_sqrt_price_per_ft2(self, query):
@@ -98,7 +101,7 @@ class Ft2(Base):
 class Bedrooms(Base):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.stats = self._get_log_price_per_bedroom_stats()
+        self.stats = self._get_sqrt_price_per_bedroom_stats()
         # Penalty value to add to z-score due to post not having ft2 attribute
         self.bdrm_penalty_z_score = 0.2
 
@@ -112,14 +115,14 @@ class Bedrooms(Base):
         )
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
-    def _get_log_price_per_bedroom_stats(self):
-        log_price_per_bedroom_site = self._get_sqrt_price_per_bedroom(self.query_site)
-        log_price_per_bedroom_area = self._get_sqrt_price_per_bedroom(self.query_area)
+    def _get_sqrt_price_per_bedroom_stats(self):
+        sqrt_price_per_bedroom_site = self._get_sqrt_price_per_bedroom(self.query_site)
+        sqrt_price_per_bedroom_area = self._get_sqrt_price_per_bedroom(self.query_area)
         return {
-            "sqrt_price_bedroom_avg_site": np.average(log_price_per_bedroom_site),
-            "sqrt_price_bedroom_avg_area": np.average(log_price_per_bedroom_area),
-            "sqrt_price_bedroom_std_site": np.std(log_price_per_bedroom_site),
-            "sqrt_price_bedroom_std_area": np.std(log_price_per_bedroom_area),
+            "sqrt_price_bedroom_avg_site": np.average(sqrt_price_per_bedroom_site),
+            "sqrt_price_bedroom_avg_area": np.average(sqrt_price_per_bedroom_area),
+            "sqrt_price_bedroom_std_site": np.std(sqrt_price_per_bedroom_site),
+            "sqrt_price_bedroom_std_area": np.std(sqrt_price_per_bedroom_area),
         }
 
     def _get_sqrt_price_per_bedroom(self, query):
@@ -137,29 +140,24 @@ class Bedrooms(Base):
         return sqrt_fn((price + (price * (1 - log_fn(bedrooms)))) / 2)
 
 
-def normalize_score(query, model):
+def normalize_score(query, model, min_score, max_score):
     """Normalizes score to fall within -100 and +100. of what's low and high, respectively."""
-    min_norm_score = -100
-    max_norm_score = 100
     # Update all model.score value with NoneType to be the average of min and max normalized scores
-    query.filter(model.score == 0).update({model.score: (min_norm_score + max_norm_score) / 2})
+    query.filter(model.score == 0).update({model.score: (min_score + max_score) / 2})
 
     # Get query with all numtypes in model.score
     query_num = query.filter(model.score != 0)
     min_q_score, max_q_score = get_min_max_scores(query_num)
-    query_num.filter(model.score <= min_q_score).update({model.score: min_norm_score})
-    query_num.filter(model.score >= max_q_score).update({model.score: max_norm_score})
+    query_num.filter(model.score <= min_q_score).update({model.score: min_score})
+    query_num.filter(model.score >= max_q_score).update({model.score: max_score})
 
     # Get query with model.score within min_q_score and max_q_score
     query_range = query_num.filter(and_(model.score >= min_q_score, model.score <= max_q_score))
     # Equation for normalizing score
-    # = (((score - low_score) / (high_score - low_score)) * (2 * max_norm_score)) + min_norm_score
-    query_range.update(
-        {
-            model.score: ((model.score - min_q_score) / (max_q_score - min_q_score)) * (2 * max_norm_score)
-            + min_norm_score
-        }
-    )
+    # = (((score - low_score) / (high_score - low_score)) * (2 * max_score)) + min_score
+    normalized_score = ((model.score - min_q_score) / (max_q_score - min_q_score)) * (2 * max_score) + min_score
+    # Round normalized score to the nearest 5
+    query_range.update({model.score: func.round(normalized_score * 0.2) / 0.2})
 
 
 def get_min_max_scores(query):
