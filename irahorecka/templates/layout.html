@@ -33,9 +33,9 @@
         </div>
       </nav>
     </header>
-    <div class="container px-8 pt-8 pb-16 mt-0 lg:mt-16 flex flex-col lg:flex-row m-auto">
+    <div class="container px-8 pt-8 pb-16 mt-0 lg:mt-16 flex flex-col lg:flex-row lg:m-auto">
       <div class="flex flex-row lg:flex-col content-between w-32 lg:w-48 mt-0 lg:mr-16">
-        <img src="{{ url_for('static', filename=['images/{}'.format(content.profile_img)]) }}" class="p-1 border-1 w-full h-32 xl:h-48 rounded-full shadow-lg">
+        <img src="{{ url_for('static', filename=['images/{}'.format(content.profile_img)]) }}" class="p-1 border-1 w-32 xl:w-48 h-32 xl:h-48 rounded-full shadow-lg">
         <div class="text-left text-base m-auto lg:mt-9 ml-6 lg:ml-2">
           <ul class="font-medium">
             <li>
