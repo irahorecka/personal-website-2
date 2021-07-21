@@ -8,9 +8,8 @@ from irahorecka.models import db, CraigslistHousing
 
 
 def write_craigslist_housing_score(site, areas):
-    """ENTRY POINT: Assigns and writes Craigslist housing value scores to every post."""
-    # For scoring purposes: converts posts with 0 bedrooms to have a traceable bedroom count of 0.5
-    CraigslistHousing.query.filter(CraigslistHousing.bedrooms == 0).update({CraigslistHousing.bedrooms: 0.5})
+    """ENTRY POINT: Assigns and writes Craigslist housing value scores to posts. Posts
+    without a score are left as N/A."""
     query_site = CraigslistHousing.query.filter(CraigslistHousing.site == site)
     query_site_ft2 = query_site.filter(CraigslistHousing.ft2 != 0)
     query_sans_site_ft2 = query_site.filter(CraigslistHousing.ft2 == 0)
@@ -19,21 +18,17 @@ def write_craigslist_housing_score(site, areas):
         query_area = query_site.filter(CraigslistHousing.area == area)
         query_area_ft2 = query_area.filter(CraigslistHousing.ft2 != 0)
         query_sans_area_ft2 = query_area.filter(CraigslistHousing.ft2 == 0)
-
         # Calculate score for posts with price and ft2
-        ft2 = Ft2(CraigslistHousing, query_site_ft2, query_area_ft2)
-        ft2.write_score(query_area_ft2)
-
+        with Ft2(CraigslistHousing, query_site_ft2, query_area_ft2) as ft2:
+            ft2.write_score(query_area_ft2)
         # Calculate score for posts with price without ft2
-        bedrooms = Bedrooms(CraigslistHousing, query_site, query_area)
-        bedrooms.write_score(query_sans_area_ft2)
+        with Bedrooms(CraigslistHousing, query_site, query_area) as bedrooms:
+            bedrooms.write_score(query_sans_area_ft2)
 
     # Posts with and without filters were scored differently - normalize scores before grouping
     normalize_score(query_site_ft2, CraigslistHousing, -100, 100)
     # Posts without ft2 is penalized - set range to -90, 90
     normalize_score(query_sans_site_ft2, CraigslistHousing, -90, 90)
-    # Reverts posts with 0.5 bedrooms to have its original value of 0
-    CraigslistHousing.query.filter(CraigslistHousing.bedrooms == 0.5).update({CraigslistHousing.bedrooms: 0})
     db.session.commit()
 
 
@@ -44,6 +39,19 @@ class Score:
         self.model = model
         self.query_site = query_site
         self.query_area = query_area
+
+    def __enter__(self):
+        """Set up instance to have subsequent queries work with 0.5 bedrooms instead of 0.
+        This is for the scoring criteria in `_calculate_post_score`, where we deal with the
+        logarithms of the number of bedrooms."""
+        self.query_site.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
+        self.query_area.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
+        return self
+
+    def __exit__(self, exc_type, exc_value, exc_tb):
+        """Set queries with 0.5 bedrooms (from `__enter__`) to 0."""
+        self.query_site.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
+        self.query_area.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
 
     def _calculate_post_score(self, site_z_score, area_z_score):
         """Calculates value score for every post. Read description below for calc breakdown:
@@ -77,35 +85,40 @@ class Ft2(Score):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.summary = self._get_log_price_ft2_summary()
+        self.summary = self._get_log_postvalue_summary()
 
     def write_score(self, query_write):
-        """Writes score to posts in filtered query `query_write`"""
-        # Filter for posts where price / ft2 > 0
+        """Writes score to posts in `query_write`."""
+        # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
-        log_price_ft2 = self._price_ft2_fn(func.log, self.model.price, self.model.ft2)
-        site_z_score = (log_price_ft2 - self.summary["site_avg_log_price_ft2"]) / self.summary["site_std_log_price_ft2"]
-        area_z_score = (log_price_ft2 - self.summary["area_avg_log_price_ft2"]) / self.summary["area_std_log_price_ft2"]
+        log_postvalue = self._postvalue_fn(func.log, self.model.price, self.model.ft2)
+        site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
+        area_z_score = (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
-    def _get_log_price_ft2_summary(self):
-        price_ft2_site = self._get_price_ft2(self.query_site)
-        price_ft2_area = self._get_price_ft2(self.query_area)
+    def _get_log_postvalue_summary(self):
+        """Gets summary average and standard deviation of log(postvalue) for posts in site
+        and area with a non-zero value in price / ft2."""
+        postvalue_site = self._get_postvalue_spread(self.query_site)
+        postvalue_area = self._get_postvalue_spread(self.query_area)
         return {
-            "site_avg_log_price_ft2": np.average(np.log(price_ft2_site)),
-            "area_avg_log_price_ft2": np.average(np.log(price_ft2_area)),
-            "site_std_log_price_ft2": np.std(np.log(price_ft2_site)),
-            "area_std_log_price_ft2": np.std(np.log(price_ft2_area)),
+            "site_avg_log_postvalue": np.average(np.log(postvalue_site)),
+            "area_avg_log_postvalue": np.average(np.log(postvalue_area)),
+            "site_std_log_postvalue": np.std(np.log(postvalue_site)),
+            "area_std_log_postvalue": np.std(np.log(postvalue_area)),
         }
 
-    def _get_price_ft2(self, query):
-        # Remove posts where price / ft2 <= 0
+    def _get_postvalue_spread(self, query):
+        """Takes posts within a percentile range of a post's value (algorithm defined in
+        `self._postvalue_fn`) from a given query. This function's intention is to gather the spread
+        of the posts' values."""
+        # Remove posts where price / ft2 <= 0 and ft2 <= 1
         query = self._filter_query_for_log_calc(query)
         price, ft2 = map(lambda x: (np.array(x)), zip(*[(post.price, post.ft2) for post in query.all()]))
         # Gets posts' price / ft2 values (`np.array`) that are within 5% - 95% percentile
-        return self._get_output_within_percentile(self._price_ft2_fn, np.log, price, ft2, perc_min=5, perc_max=95)
+        return self._get_output_within_percentile(self._postvalue_fn, np.log, price, ft2, perc_min=5, perc_max=95)
 
-    def _price_ft2_fn(self, log_fn, price, ft2):
+    def _postvalue_fn(self, log_fn, price, ft2):
         return log_fn(price / log_fn(ft2))
 
     def _filter_query_for_log_calc(self, query):
@@ -119,7 +132,8 @@ class Bedrooms(Score):
         self.summary = self._get_log_postvalue_summary()
 
     def write_score(self, query_write):
-        # Filter for posts where
+        """Writes score to posts in `query_write`."""
+        # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
         log_postvalue = func.log(self._postvalue_fn(func.log, self.model.price, self.model.bedrooms))
         site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
@@ -127,8 +141,10 @@ class Bedrooms(Score):
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
     def _get_log_postvalue_summary(self):
-        postvalue_site = self._get_postvalue(self.query_site)
-        postvalue_area = self._get_postvalue(self.query_area)
+        """Gets summary average and standard deviation of log(postvalue) for posts in site
+        and area with a non-zero value in bedrooms and price."""
+        postvalue_site = self._get_postvalue_spread(self.query_site)
+        postvalue_area = self._get_postvalue_spread(self.query_area)
         return {
             "site_avg_log_postvalue": np.average(np.log(postvalue_site)),
             "area_avg_log_postvalue": np.average(np.log(postvalue_area)),
@@ -136,9 +152,11 @@ class Bedrooms(Score):
             "area_std_log_postvalue": np.std(np.log(postvalue_area)),
         }
 
-    def _get_postvalue(self, query):
-        """Takes posts within 5% - 95% percentile price/sqft from a given query."""
-        # Max bedrooms allowed is 7
+    def _get_postvalue_spread(self, query):
+        """Takes posts within a percentile range of a post's value (algorithm defined in
+        `self._postvalue_fn`) from a given query. This function's intention is to gather the spread
+        of the posts' values."""
+        # Filter for bedrooms to be within 0 - 7 range. Filter for price > 0.
         query = self._filter_query_for_log_calc(query)
         price, bedrooms = map(lambda x: (np.array(x)), zip(*[(post.price, post.bedrooms) for post in query.all()]))
         # Gets posts' value that are within 5% - 95% percentile
