@@ -27,8 +27,8 @@ def write_craigslist_housing_score(site, areas):
         # Calculate score for posts with price without ft2
         with Bedrooms(CraigslistHousing, query_site, query_area) as bedrooms:
             bedrooms.write_score(query_area_sans_ft2)
-        # Posts without ft2 is penalized - set range to -90, 90
-        normalize_score(query_area_sans_ft2, CraigslistHousing, -90, 90)
+        # Posts without ft2 have scores not as effective as posts with ft2 - set range to -80, 80
+        normalize_score(query_area_sans_ft2, CraigslistHousing, -80, 80)
 
     db.session.commit()
 

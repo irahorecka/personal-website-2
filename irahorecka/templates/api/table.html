@@ -1,6 +1,6 @@
 {% if posts|length > 0 %}
 <div class="h-96 md:h-80 lg:h-96 fixed-head border-2 border-gray-200 overflow-y-auto mt-10">
-  <table class="table-auto border-separate w-full mx-auto">
+  <table class="table-fixed sm:table-auto border-separate w-full mx-auto">
     <thead>
       <tr>
         <th class="text-xs sm:text-base fixed-head p-3 font-bold uppercase bg-gray-200 text-gray-600 border border-gray-300 table-cell">Title</th>
@@ -12,7 +12,7 @@
     <tbody>
       {% for post in posts %}
       <tr class="bg-white lg:hover:bg-gray-100 flex flex-no-wrap flex-row table-row">
-        <td class="text-xs sm:text-base w-full p-3 text-gray-800 text-left border border-b block table-cell static"><a href="{{ post.url }}" class="text-blue-600 hover:text-blue-800" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ post.title }}</a></td>
+        <td class="text-xs sm:text-base w-full p-3 text-gray-800 text-left border border-b block table-cell static"><a href="{{ post.url }}" class="break-words text-blue-600 hover:text-blue-800" rel="noopener noreferrer" target="_blank" onclick="this.blur();">{{ post.title }}</a></td>
         <td class="text-xs sm:text-base w-full p-3 text-gray-800 text-center border border-b block table-cell static">{{ post.price }}</td>
         {% if post.bedrooms == 0 %}
         <td class="text-xs sm:text-base w-full p-3 text-gray-800 text-center border border-b block table-cell static">-</td>

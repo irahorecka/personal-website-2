@@ -13,6 +13,10 @@ select {
     -webkit-appearance: none;
 }
 
+th+th {
+    width: 75px
+}
+
 /* For `.github-*` view irahorecka/templates/projects.html */
 a.github-link:active,
 a.github-link:focus {
