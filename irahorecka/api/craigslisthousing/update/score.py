@@ -12,23 +12,24 @@ def write_craigslist_housing_score(site, areas):
     without a score are left as N/A."""
     query_site = CraigslistHousing.query.filter(CraigslistHousing.site == site)
     query_site_ft2 = query_site.filter(CraigslistHousing.ft2 != 0)
-    query_sans_site_ft2 = query_site.filter(CraigslistHousing.ft2 == 0)
+    query_site_sans_ft2 = query_site.filter(CraigslistHousing.ft2 == 0)
 
     for area in areas:
         query_area = query_site.filter(CraigslistHousing.area == area)
-        query_area_ft2 = query_area.filter(CraigslistHousing.ft2 != 0)
-        query_sans_area_ft2 = query_area.filter(CraigslistHousing.ft2 == 0)
+        query_area_ft2 = query_site_ft2.filter(CraigslistHousing.area == area)
+        query_area_sans_ft2 = query_site_sans_ft2.filter(CraigslistHousing.area == area)
+
         # Calculate score for posts with price and ft2
         with Ft2(CraigslistHousing, query_site_ft2, query_area_ft2) as ft2:
             ft2.write_score(query_area_ft2)
+        # Posts with and without filters were scored differently - normalize scores before grouping
+        normalize_score(query_area_ft2, CraigslistHousing, -100, 100)
         # Calculate score for posts with price without ft2
         with Bedrooms(CraigslistHousing, query_site, query_area) as bedrooms:
-            bedrooms.write_score(query_sans_area_ft2)
+            bedrooms.write_score(query_area_sans_ft2)
+        # Posts without ft2 is penalized - set range to -90, 90
+        normalize_score(query_area_sans_ft2, CraigslistHousing, -90, 90)
 
-    # Posts with and without filters were scored differently - normalize scores before grouping
-    normalize_score(query_site_ft2, CraigslistHousing, -100, 100)
-    # Posts without ft2 is penalized - set range to -90, 90
-    normalize_score(query_sans_site_ft2, CraigslistHousing, -90, 90)
     db.session.commit()
 
 
@@ -56,16 +57,14 @@ class Score:
     def _calculate_post_score(self, site_z_score, area_z_score):
         """Calculates value score for every post. Read description below for calc breakdown:
         - Calculate AVG, STDEV price/sqft for posts within site and area.
-            - Area value is multiplied with 0.6 coefficient, Site value with 0.3 coefficient.
-            - If a post does not have sqft, give them neutral score (1.0).
+            - Area value is multiplied with 0.2 coefficient, Site value with 0.7 coefficient.
         - Score equation:
-            = 0.6 * (1 - (0.6 * stdev_within_area)) + 0.3 * (1 - (0.3 * stdev_within_bayarea)) + 0.1 * (1 + math.log(num_bedrooms)) - 1
+            = 0.25 * (1 - (0.25 * stdev_within_area)) + 0.65 * (1 - (0.65 * stdev_within_bayarea)) + 0.1 * (1 + math.log(num_bedrooms)) - 1
         - Purely average post should equate to a score of 1.0, meaning average price within Site, Area, and has 1 bedroom.
         - Score more than 0 is GOOD, less than 0 is BAD."""
-        site_weight = 0.3 * (1 - (0.3 * site_z_score))
-        area_weight = 0.6 * (1 - (0.6 * area_z_score))
+        site_weight = 0.25 * (1 - (0.25 * site_z_score))
+        area_weight = 0.65 * (1 - (0.65 * area_z_score))
         bedroom_weight = 0.1 * (1 + func.log(self.model.bedrooms))
-
         # Subtract 1, which is the neutral score
         return site_weight + area_weight + bedroom_weight - 1
 
@@ -91,7 +90,7 @@ class Ft2(Score):
         """Writes score to posts in `query_write`."""
         # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
-        log_postvalue = self._postvalue_fn(func.log, self.model.price, self.model.ft2)
+        log_postvalue = func.log(self._postvalue_fn(func.log, func.sqrt, self.model.price, self.model.ft2))
         site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
         area_z_score = (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
@@ -116,10 +115,12 @@ class Ft2(Score):
         query = self._filter_query_for_log_calc(query)
         price, ft2 = map(lambda x: (np.array(x)), zip(*[(post.price, post.ft2) for post in query.all()]))
         # Gets posts' price / ft2 values (`np.array`) that are within 5% - 95% percentile
-        return self._get_output_within_percentile(self._postvalue_fn, np.log, price, ft2, perc_min=5, perc_max=95)
+        return self._get_output_within_percentile(
+            self._postvalue_fn, np.log, np.sqrt, price, ft2, perc_min=5, perc_max=95
+        )
 
-    def _postvalue_fn(self, log_fn, price, ft2):
-        return log_fn(price / log_fn(ft2))
+    def _postvalue_fn(self, log_fn, sqrt_fn, price, ft2):
+        return log_fn(price) * sqrt_fn(price / ft2)
 
     def _filter_query_for_log_calc(self, query):
         """Update query to select for self.model.price / self.model.ft2 > 0 to allow for logarithmic calc."""
@@ -127,6 +128,8 @@ class Ft2(Score):
 
 
 class Bedrooms(Score):
+    """Calculates score for posts without ft2 attribute. Inherits from `Score`."""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.summary = self._get_log_postvalue_summary()
@@ -177,7 +180,6 @@ def normalize_score(query, model, min_score, max_score):
     """Normalizes score to fall within -100 and +100. of what's low and high, respectively."""
     # Update all model.score value with NoneType to be the average of min and max normalized scores
     query.filter(model.score == 0).update({model.score: (min_score + max_score) / 2})
-
     # Get query with all numtypes in model.score
     query_num = query.filter(model.score != 0)
     min_q_score, max_q_score = get_min_max_scores(query_num)
