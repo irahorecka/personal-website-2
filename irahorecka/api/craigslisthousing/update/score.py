@@ -30,7 +30,8 @@ def write_craigslist_housing_score(site, areas):
 
     # Posts with and without filters were scored differently - normalize scores before grouping
     normalize_score(query_site_ft2, CraigslistHousing, -100, 100)
-    normalize_score(query_sans_site_ft2, CraigslistHousing, -100, 100)
+    # Posts without ft2 is penalized - set range to -90, 90
+    normalize_score(query_sans_site_ft2, CraigslistHousing, -90, 90)
     # Reverts posts with 0.5 bedrooms to have its original value of 0
     CraigslistHousing.query.filter(CraigslistHousing.bedrooms == 0.5).update({CraigslistHousing.bedrooms: 0})
     db.session.commit()
@@ -82,7 +83,7 @@ class Ft2(Score):
         """Writes score to posts in filtered query `query_write`"""
         # Filter for posts where price / ft2 > 0
         query_write = self._filter_query_for_log_calc(query_write)
-        log_price_ft2 = func.log(self.model.price / self.model.ft2)
+        log_price_ft2 = self._price_ft2_fn(func.log, self.model.price, self.model.ft2)
         site_z_score = (log_price_ft2 - self.summary["site_avg_log_price_ft2"]) / self.summary["site_std_log_price_ft2"]
         area_z_score = (log_price_ft2 - self.summary["area_avg_log_price_ft2"]) / self.summary["area_std_log_price_ft2"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
@@ -102,11 +103,14 @@ class Ft2(Score):
         query = self._filter_query_for_log_calc(query)
         price, ft2 = map(lambda x: (np.array(x)), zip(*[(post.price, post.ft2) for post in query.all()]))
         # Gets posts' price / ft2 values (`np.array`) that are within 5% - 95% percentile
-        return self._get_output_within_percentile(lambda x, y: np.divide(x, y), price, ft2, perc_min=5, perc_max=95)
+        return self._get_output_within_percentile(self._price_ft2_fn, np.log, price, ft2, perc_min=5, perc_max=95)
+
+    def _price_ft2_fn(self, log_fn, price, ft2):
+        return log_fn(price / log_fn(ft2))
 
     def _filter_query_for_log_calc(self, query):
         """Update query to select for self.model.price / self.model.ft2 > 0 to allow for logarithmic calc."""
-        return query.filter((self.model.price / self.model.ft2) > 0)
+        return query.filter(and_(self.model.price / self.model.ft2 > 0, self.model.ft2 > 1))
 
 
 class Bedrooms(Score):
