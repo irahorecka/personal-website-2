@@ -99,10 +99,14 @@ class Ft2(Score):
         # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
         summary = self._get_log_postvalue_summary()
-        log_postvalue = func.log(self._postvalue_fn(func.log, func.sqrt, self.model.price, self.model.ft2))
+        log_postvalue = func.log(
+            self._postvalue_fn(func.log, func.sqrt, self.model.price, self.model.ft2, self.model.bedrooms)
+        )
         site_z_score = (log_postvalue - summary["site_avg_log_postvalue"]) / summary["site_std_log_postvalue"]
         area_z_score = (log_postvalue - summary["area_avg_log_postvalue"]) / summary["area_std_log_postvalue"]
-        query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
+        query_write.update(
+            {self.model.score: self._calculate_post_score(site_z_score, area_z_score)}, synchronize_session="fetch"
+        )
 
     def _get_log_postvalue_summary(self):
         """Gets summary average and standard deviation of log(postvalue) for posts in site
@@ -122,18 +126,25 @@ class Ft2(Score):
         of the posts' values."""
         # Remove posts where price / ft2 <= 0 and ft2 <= 1
         query = self._filter_query_for_log_calc(query)
-        price, ft2 = map(lambda x: (np.array(x)), zip(*[(post.price, post.ft2) for post in query.all()]))
+        price, ft2, bedrooms = map(
+            lambda x: (np.array(x)), zip(*[(post.price, post.ft2, post.bedrooms) for post in query.all()])
+        )
         # Gets posts' price / ft2 values (`np.array`) that are within 5% - 95% percentile
         return self._get_output_within_percentile(
-            self._postvalue_fn, np.log, np.sqrt, price, ft2, perc_min=5, perc_max=95
+            self._postvalue_fn, np.log, np.sqrt, price, ft2, bedrooms, perc_min=5, perc_max=95
         )
 
-    def _postvalue_fn(self, log_fn, sqrt_fn, price, ft2):
-        return log_fn(price) * sqrt_fn(price / log_fn(ft2))
+    def _postvalue_fn(self, log_fn, sqrt_fn, price, ft2, bedrooms):
+        return log_fn(log_fn(price) / sqrt_fn(bedrooms)) * price / sqrt_fn(ft2)
 
     def _filter_query_for_log_calc(self, query):
         """Update query to select for self.model.price / self.model.ft2 > 0 to allow for logarithmic calc."""
-        return query.filter(and_(self.model.price / self.model.ft2 > 0, self.model.ft2 > 1))
+        return query.filter(
+            and_(
+                self.model.price / func.sqrt(self.model.ft2) > 0,
+                func.log(self.model.price) / func.sqrt(self.model.ft2) > 0,
+            )
+        )
 
 
 class Bedrooms(Score):
@@ -150,7 +161,9 @@ class Bedrooms(Score):
         log_postvalue = func.log(self._postvalue_fn(func.log, self.model.price, self.model.bedrooms))
         site_z_score = (log_postvalue - summary["site_avg_log_postvalue"]) / summary["site_std_log_postvalue"]
         area_z_score = (log_postvalue - summary["area_avg_log_postvalue"]) / summary["area_std_log_postvalue"]
-        query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
+        query_write.update(
+            {self.model.score: self._calculate_post_score(site_z_score, area_z_score)}, synchronize_session="fetch"
+        )
 
     def _get_log_postvalue_summary(self):
         """Gets summary average and standard deviation of log(postvalue) for posts in site
@@ -208,7 +221,7 @@ def get_min_max_scores(query):
     """To be called after binding score to posts. Normalizes score to more user friendly values.
     See `normalize_score`. Input query where query.score is all numerics."""
     scores = np.array([post.score for post in query.all()])
-    # Takes scores within 1% to 99% percentile - sets these as absolute min and max, respectively
-    low = np.percentile(scores, 1)
-    high = np.percentile(scores, 99)
+    # Takes scores within 0.75% to 99.25% percentile - sets these as absolute min and max, respectively
+    low = np.percentile(scores, 0.75)
+    high = np.percentile(scores, 99.25)
     return low, high
