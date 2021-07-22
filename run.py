@@ -10,7 +10,9 @@ from pathlib import Path
 
 import yaml
 
-from irahorecka import app
+from irahorecka import create_app
+
+app = create_app()
 
 if __name__ == "__main__":
     # For development purposes only!
