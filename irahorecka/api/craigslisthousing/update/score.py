@@ -10,7 +10,8 @@ from irahorecka.models import db, CraigslistHousing
 def write_craigslist_housing_score(site, areas):
     """ENTRY POINT: Assigns and writes Craigslist housing value scores to posts. Posts
     without a score are left as N/A."""
-    query_site = CraigslistHousing.query.filter(CraigslistHousing.site == site)
+    query = preliminary_filter(CraigslistHousing.query, CraigslistHousing)
+    query_site = query.filter(CraigslistHousing.site == site)
     query_site_ft2 = query_site.filter(CraigslistHousing.ft2 != 0)
     query_site_sans_ft2 = query_site.filter(CraigslistHousing.ft2 == 0)
 
@@ -31,6 +32,14 @@ def write_craigslist_housing_score(site, areas):
         normalize_score(query_area_sans_ft2, CraigslistHousing, -80, 80)
 
     db.session.commit()
+
+
+def preliminary_filter(query, model):
+    """Performs preliminary filters to a query and model. Use to clean up query prior to performing
+    statistical analysis."""
+    # If 'studio' anywhere in the title, force bedrooms to reflect studio property.
+    query.filter(func.lower(model.title).contains("studio")).update({model.bedrooms: 0}, synchronize_session="fetch")
+    return query
 
 
 class Score:
