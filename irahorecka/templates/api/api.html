@@ -3,7 +3,8 @@
 <script defer src="{{ url_for('static', filename="external/htmx-1.5.0.min.js") }}"></script>
 {% endblock js %}
 {% block content %}
-<div class="pt-12 sm:pt-16 lg:pt-20">
+<p class="mt-6 text-xl leading-8 text-gray-500">{{ content.body.second }}</p>
+<div class="pt-12 sm:pt-16">
   <h2 class="text-2xl font-bold">SF Bay Area</h2>
   <form class="mt-8 w-full">
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">

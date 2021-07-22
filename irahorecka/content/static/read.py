@@ -22,7 +22,8 @@ CONTENT = {
     "api": {
         "header": {"first": "Housing"},
         "body": {
-            "first": "I enjoy writing API wrappers in Python. Have a look-see at some real-time Craigslist housing posts in the SF Bay Area. If I don't have text here the CSS is bonkers :(."
+            "first": "Finding housing is one of the more painful aspects of moving. That's why I made this little tool to help you find the best housing deals on Craigslist.",
+            "second": "The current scope of search is in the San Francisco Bay Area, which is where I'm from. Let me know if you'd like to see a new location. 🏘️",
         },
     },
     "api_docs": {

@@ -76,7 +76,7 @@ def api():
     return render_template("api/api.html", content=content)
 
 
-@app.route("/api/docs")
+@app.route("/docs", subdomain="api")
 def api_docs():
     """Documentation page for personal website's API."""
     content = {
@@ -90,9 +90,9 @@ def api_docs():
 
 @app.route("/api/neighborhoods", methods=["POST"])
 def api_neighborhoods():
+    """Takes user selection of region and returns neighborhoods within selection."""
     area_key = SFBAY_AREA_KEY.get(request.form.get("area", ""))
-    neighborhoods = sorted([neighborhood for neighborhood, area in NEIGHBORHOODS.items() if area == area_key])
-    return render_template("api/neighborhoods.html", neighborhoods=neighborhoods)
+    return render_template("api/neighborhoods.html", neighborhoods=NEIGHBORHOODS.get(area_key, tuple()))
 
 
 @app.route("/api/submit", methods=["POST"])
