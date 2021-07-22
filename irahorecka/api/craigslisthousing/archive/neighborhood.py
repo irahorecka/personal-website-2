@@ -1,4 +1,5 @@
 """
+Writes neighborhoods to file
 """
 from irahorecka.api.craigslisthousing.utils import open_json, write_json, NEIGHBORHOOD_PATH
 

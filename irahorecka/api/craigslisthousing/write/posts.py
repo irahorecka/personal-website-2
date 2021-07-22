@@ -21,7 +21,7 @@ def write_craigslist_housing(site, areas=("null",)):
             repost_of=post.get("repost_of", ""),
             last_updated=datetime.strptime(post["last_updated"], "%Y-%m-%d %H:%M"),
             title=post.get("title", ""),
-            neighborhood=post.get("neighborhood", ""),
+            neighborhood=post.get("neighborhood", "").lower(),
             address=post.get("address", ""),
             # Coordinates for Guest Peninsula, Antactica if there's no lat or lon.
             lat="-76.299965" if not post.get("lat") else post["lat"],
