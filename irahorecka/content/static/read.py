@@ -22,8 +22,8 @@ CONTENT = {
     "api": {
         "header": {"first": "Housing"},
         "body": {
-            "first": "Finding housing is one of the more painful aspects of moving. That's why I made this little tool to help you find the best housing deals on Craigslist.",
-            "second": "The current scope of search is in the San Francisco Bay Area, which is where I'm from. Let me know if you'd like to see a new location. 🏘️",
+            "first": "Finding housing on Craigslist is painful. That's why I made this little tool to help you find the best housing deals for your next move.",
+            "second": "The current scope is in the San Francisco Bay Area. Let me know if you'd like to see a new location. 🏘️",
         },
     },
     "api_docs": {
