@@ -17,7 +17,7 @@
     <script defer src="{{ url_for('static', filename="external/iconify-1.0.7.min.js") }}"></script>
     <script defer src="{{ url_for('static', filename="external/headroom-0.9.4.min.js") }}"></script>
     <script defer src="{{ url_for('static', filename="js/nav.js") }}"></script>
-    <title>{{ content.title }}</title>
+    <title>Ira Horecka | {{ content.title }}</title>
   </head>
   <body class="bg-white font-sans">
     <header class="header header--fixed" role="banner">
@@ -27,7 +27,7 @@
         </div>
         <div class="nav-right">
           <a href="/" class="hover:text-yellow-600">home</a>
-          <a href="/api" class="hover:text-yellow-600">api</a>
+          <a href="/housing" class="hover:text-yellow-600">housing</a>
           <a href="/projects" class="hover:text-yellow-600">projects</a>
           <a href="javascript:void(0);" class="nav-toggle">☰</a>
         </div>
@@ -39,7 +39,7 @@
         <div class="text-left text-base m-auto lg:mt-9 ml-6 lg:ml-2">
           <ul class="font-medium">
             <li>
-              <p class="text-gray-500 mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">Lab Automation Engineer</p>
+              <p class="text-gray-500 mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">PhD Candidate</p>
             </li>
             <li>
               <a class="inline-flex" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
@@ -53,12 +53,16 @@
               LinkedIn
               </a>
             </li>
+            <li>
+              <a class="inline-flex" href="mailto:ira.horecka@yahoo.com" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+              <img src="{{ url_for('static', filename="images/mail.svg") }}" class="fa-icon mail-gray m-auto mr-2">
+              Mail
+              </a>
+            </li>
           </ul>
         </div>
       </div>
       <div class="flex flex-col blog max-w-3xl">
-        <h1 class="font-extrabold tracking-tight text-gray-900 text-4xl mt-8 lg:mt-0 sm:text-5xl lg:text-6xl">{{ content.header.first }}</h1>
-        <p class="mt-6 text-xl leading-8 text-gray-500">{{ content.body.first }}</p>
         {%- block content -%}
         {%- endblock content -%}
       </div>

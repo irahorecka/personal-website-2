@@ -3,7 +3,15 @@
 <script defer src="{{ url_for('static', filename="external/htmx-1.5.0.min.js") }}"></script>
 {% endblock js %}
 {% block content %}
-<p class="mt-6 text-xl leading-8 text-gray-500">{{ content.body.second }}</p>
+<h1 class="font-extrabold tracking-tight text-gray-900 text-4xl mt-8 lg:mt-0 sm:text-5xl lg:text-6xl">Housing</h1>
+<p class="mt-6 text-xl leading-8 text-gray-500">
+  Finding housing on Craigslist isn't fun. That's why I made this little tool to help you find the best housing deals for your next move.
+  This tool is also available for developers, check out the API docs
+  <a href="https://api.localhost:5000/housing/docs" class="text-yellow-600 hover:underline">here</a>.
+</p>
+<p class="mt-6 text-xl leading-8 text-gray-500">
+  The current scope is in the San Francisco Bay Area. Email me if you'd like to see a new location. 🏘️
+</p>
 <div class="pt-12 sm:pt-16">
   <h2 class="text-2xl font-bold">SF Bay Area</h2>
   <form class="mt-8 w-full">

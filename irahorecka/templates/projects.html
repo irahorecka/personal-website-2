@@ -1,5 +1,9 @@
 {% extends "layout.html" %}
 {% block content %}
+<h1 class="font-extrabold tracking-tight text-gray-900 text-4xl mt-8 lg:mt-0 sm:text-5xl lg:text-6xl">Programming projects</h1>
+<p class="mt-6 text-xl leading-8 text-gray-500">
+  I'm a self-taught programmer and I dig it. I'm most comfortable with Python and web programming (HTML/CSS/JS).
+</p>
 <p class="mt-6 text-xl leading-8 text-gray-500">Below are some of my public repositories on GitHub:</p>
 <ul class="flex flex-wrap py-8">
   {%- for repo in content.repos %}

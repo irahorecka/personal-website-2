@@ -12,8 +12,7 @@ from flask import render_template, request, jsonify
 
 from irahorecka import app
 from irahorecka.exceptions import InvalidUsage, ValidationError
-from irahorecka.api import read_craigslist_housing, NEIGHBORHOODS, SFBAY_AREA_KEY
-from irahorecka.content import get_header_text, get_body_text, get_gallery_imgs, read_github_repos
+from irahorecka.api import read_craigslist_housing, read_github_repos, NEIGHBORHOODS, SFBAY_AREA_KEY
 from irahorecka.utils import tidy_post
 
 with open(Path(__file__).absolute().parent.parent / "config.yaml", "r") as config:
@@ -32,11 +31,8 @@ def handle_invalid_usage(error):
 def home():
     """Landing page of personal website."""
     content = {
-        "title": "Ira Horecka | Home",
+        "title": "Home",
         "profile_img": "profile.png",
-        "header": get_header_text("home"),  # Use Jinja syntax s/a `content.header.first`, `content.header.second`, etc.
-        "body": get_body_text("home"),  # Use Jinja syntax s/a `content.body.first`, `content.body.second`, etc.
-        "images": get_gallery_imgs(),
     }
     return render_template("home.html", content=content)
 
@@ -64,26 +60,22 @@ def api_cl_site_area(site, area):
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
 
-@app.route("/api")
+@app.route("/housing")
 def api():
     """API page of personal website."""
     content = {
-        "title": "Ira Horecka | API",
+        "title": "Housing",
         "profile_img": "me_arrow.png",
-        "header": get_header_text("api"),
-        "body": get_body_text("api"),
     }
-    return render_template("api/api.html", content=content)
+    return render_template("api/housing.html", content=content)
 
 
 @app.route("/docs", subdomain="api")
 def api_docs():
     """Documentation page for personal website's API."""
     content = {
-        "title": "Ira Horecka | API Documentation",
+        "title": "Housing API Documentation",
         "profile_img": "me_arrow.png",
-        "header": get_header_text("api_docs"),
-        "body": get_body_text("api_docs"),
     }
     return render_template("api/docs.html", content=content)
 
@@ -117,10 +109,8 @@ def api_table():
 def projects():
     """GitHub projects page of personal website."""
     content = {
-        "title": "Ira Horecka | API",
+        "title": "Projects",
         "profile_img": "me_computing.png",
-        "header": get_header_text("projects"),
-        "body": get_body_text("projects"),
         "repos": read_github_repos(GITHUB_REPOS),
     }
     return render_template("projects.html", content=content)

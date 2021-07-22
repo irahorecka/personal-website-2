@@ -3,6 +3,7 @@ Clean db of junk data
 Criteria:
 - Posts older than a week of cleaning
 - Repeated titles per given neighborhood in database
+- Posts with price < $300
 """
 
 import datetime
