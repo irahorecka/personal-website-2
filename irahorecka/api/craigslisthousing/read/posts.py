@@ -2,7 +2,6 @@
 """
 
 from datetime import datetime
-from typing import cast
 
 from cerberus import Validator
 

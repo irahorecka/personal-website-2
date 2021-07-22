@@ -23,13 +23,13 @@ def write_craigslist_housing_score(site, areas):
         # Calculate score for posts with price and ft2
         with Ft2(CraigslistHousing, query_site_ft2, query_area_ft2) as ft2:
             ft2.write_score(query_area_ft2)
-        # Posts with and without filters were scored differently - normalize scores before grouping
+        # Posts with and without filters are scored differently - normalize scores before grouping
         normalize_score(query_area_ft2, CraigslistHousing, -100, 100)
         # Calculate score for posts with price without ft2
         with Bedrooms(CraigslistHousing, query_site, query_area) as bedrooms:
             bedrooms.write_score(query_area_sans_ft2)
-        # Posts without ft2 have scores not as effective as posts with ft2 - set range to -80, 80
-        normalize_score(query_area_sans_ft2, CraigslistHousing, -80, 80)
+        # Posts without ft2 have scores not as effective as posts with ft2 - set range to -90, 90
+        normalize_score(query_area_sans_ft2, CraigslistHousing, -90, 90)
 
     db.session.commit()
 
@@ -93,15 +93,15 @@ class Ft2(Score):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.summary = self._get_log_postvalue_summary()
 
     def write_score(self, query_write):
         """Writes score to posts in `query_write`."""
         # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
+        summary = self._get_log_postvalue_summary()
         log_postvalue = func.log(self._postvalue_fn(func.log, func.sqrt, self.model.price, self.model.ft2))
-        site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
-        area_z_score = (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
+        site_z_score = (log_postvalue - summary["site_avg_log_postvalue"]) / summary["site_std_log_postvalue"]
+        area_z_score = (log_postvalue - summary["area_avg_log_postvalue"]) / summary["area_std_log_postvalue"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
     def _get_log_postvalue_summary(self):
@@ -129,7 +129,7 @@ class Ft2(Score):
         )
 
     def _postvalue_fn(self, log_fn, sqrt_fn, price, ft2):
-        return log_fn(price) * sqrt_fn(price / ft2)
+        return log_fn(price) * sqrt_fn(price / log_fn(ft2))
 
     def _filter_query_for_log_calc(self, query):
         """Update query to select for self.model.price / self.model.ft2 > 0 to allow for logarithmic calc."""
@@ -141,15 +141,15 @@ class Bedrooms(Score):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.summary = self._get_log_postvalue_summary()
 
     def write_score(self, query_write):
         """Writes score to posts in `query_write`."""
         # Filter posts to allow for logarithmic operations
         query_write = self._filter_query_for_log_calc(query_write)
+        summary = self._get_log_postvalue_summary()
         log_postvalue = func.log(self._postvalue_fn(func.log, self.model.price, self.model.bedrooms))
-        site_z_score = (log_postvalue - self.summary["site_avg_log_postvalue"]) / self.summary["site_std_log_postvalue"]
-        area_z_score = (log_postvalue - self.summary["area_avg_log_postvalue"]) / self.summary["area_std_log_postvalue"]
+        site_z_score = (log_postvalue - summary["site_avg_log_postvalue"]) / summary["site_std_log_postvalue"]
+        area_z_score = (log_postvalue - summary["area_avg_log_postvalue"]) / summary["area_std_log_postvalue"]
         query_write.update({self.model.score: self._calculate_post_score(site_z_score, area_z_score)})
 
     def _get_log_postvalue_summary(self):
