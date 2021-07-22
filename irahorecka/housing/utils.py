@@ -9,9 +9,10 @@ SCORE_COLORS = {
 }
 
 
-def tidy_post(post):
-    post["score_color"] = get_score_color(post["score"])
-    return post
+def tidy_posts(posts):
+    for post in posts:
+        post["score_color"] = get_score_color(post["score"])
+    return posts
 
 
 def get_score_color(score):
