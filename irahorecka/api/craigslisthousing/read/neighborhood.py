@@ -9,5 +9,5 @@ NEIGHBORHOOD_PATH = Path(__file__).absolute().parent.joinpath("neighborhoods.jso
 def read_neighborhoods():
     """Returns `neighborhoods.json` as dictionary."""
     with open(NEIGHBORHOOD_PATH) as file:
-        data = json.load(file)
-    return data
+        neighborhood = json.load(file)
+    return neighborhood

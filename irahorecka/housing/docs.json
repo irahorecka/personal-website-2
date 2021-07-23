@@ -1,0 +1,55 @@
+[
+    {
+        "request": "GET",
+        "endpt": "/{site}",
+        "desc": [
+            "This is the first sentence",
+            "This is the second sentence",
+            "This is the third sentence"
+        ],
+        "example": "api.irahorecka.com/housing/sfbay?limit=100&min_price=1200",
+        "warning": {
+            "title": "Notice",
+            "body": "Currently, only the San Francisco Bay Area is supported."
+        },
+        "params": [
+            {"name": "id", "desc": "Craigslist post ID."},
+            {"name": "limit", "desc": "Number of results to return per request. Default is 120."},
+            {"name": "neighborhood", "desc": "Craigslist neighborhood within the region."},
+            {"name": "housing_type", "desc": "Housing type to search."},
+            {"name": "laundry", "desc": "Laundry amenities to search."},
+            {"name": "parking", "desc": "Parking amenities to search."},
+            {"name": "min_bedrooms", "desc": "Minimum bedrooms to search."},
+            {"name": "max_bedrooms", "desc": "Maximum bedrooms to search."},
+            {"name": "min_ft2", "desc": "Minimum area (ft2) to search."},
+            {"name": "max_ft2", "desc": "Maximum area (ft2) to search."},
+            {"name": "min_price", "desc": "Minimum price (USD) to search."},
+            {"name": "max_price", "desc": "Maximum price (USD) to search."}
+        ]
+    },
+    {
+        "request": "GET",
+        "endpt": "/{site}/{area}",
+        "desc": [
+            "This is the first sentence",
+            "This is the second sentence",
+            "This is the third sentence"
+        ],
+        "example": "api.irahorecka.com/housing/sfbay/eby?limit=100&neighborhood=berkeley",
+        "warning": null,
+        "params": [
+            {"name": "id", "desc": "Craigslist post ID."},
+            {"name": "limit", "desc": "Number of results to return per request. Default is 120."},
+            {"name": "neighborhood", "desc": "Craigslist neighborhood within the region."},
+            {"name": "housing_type", "desc": "Housing type to search."},
+            {"name": "laundry", "desc": "Laundry amenities to search."},
+            {"name": "parking", "desc": "Parking amenities to search."},
+            {"name": "min_bedrooms", "desc": "Minimum bedrooms to search."},
+            {"name": "max_bedrooms", "desc": "Maximum bedrooms to search."},
+            {"name": "min_ft2", "desc": "Minimum area (ft2) to search."},
+            {"name": "max_ft2", "desc": "Maximum area (ft2) to search."},
+            {"name": "min_price", "desc": "Minimum price (USD) to search."},
+            {"name": "max_price", "desc": "Maximum price (USD) to search."}
+        ]
+    }
+]

@@ -1,3 +1,9 @@
+import json
+from pathlib import Path
+
+DOCS_PATH = Path(__file__).absolute().parent.joinpath("docs.json")
+
+
 SCORE_COLORS = {
     "very-poor": "bg-red-400",
     "poor": "bg-red-300",
@@ -30,3 +36,10 @@ def get_score_color(score):
         return SCORE_COLORS["poor"]
     if score <= 0.0:
         return SCORE_COLORS["mild-poor"]
+
+
+def read_docs():
+    """Returns `neighborhoods.json` as dictionary."""
+    with open(DOCS_PATH) as file:
+        docs = json.load(file)
+    return docs

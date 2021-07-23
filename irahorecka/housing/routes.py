@@ -9,7 +9,7 @@ from flask import render_template, request, jsonify, Blueprint
 
 from irahorecka.api import read_craigslist_housing, NEIGHBORHOODS, SFBAY_AREA_KEY
 from irahorecka.exceptions import InvalidUsage, ValidationError
-from irahorecka.housing.utils import tidy_posts
+from irahorecka.housing.utils import tidy_posts, read_docs
 
 housing = Blueprint("housing", __name__)
 
@@ -90,5 +90,6 @@ def api_housing_docs():
     content = {
         "title": "API Documentation: Housing",
         "profile_img": "me_arrow.png",
+        "docs": read_docs(),
     }
     return render_template("housing/docs.html", content=content)
