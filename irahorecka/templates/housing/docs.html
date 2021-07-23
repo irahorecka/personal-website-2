@@ -3,22 +3,29 @@
 <script defer src="{{ url_for('static', filename="external/alpine-3.3.2.min.js") }}"></script>
 {% endblock js %}
 {% block content %}
-<h1 class="font-extrabold tracking-tight text-gray-900 text-3xl mt-8 lg:mt-0 sm:text-4xl lg:text-5xl">API Documentation: Housing</h1>
+<h1 class="font-extrabold tracking-tight text-gray-900 text-3xl mt-8 sm:text-4xl lg:text-5xl">API Docs : Housing</h1>
 <p class="mt-6 text-xl leading-8 text-gray-500">
-  Please review closely for building a structured query. Currently, the only API hosted is for Craigslist Housing in the San Francisco Bay Area.
+  You can use the Housing REST API to create calls to get housing data from Craigslist.
 </p>
+<div class="w-full bg-gray-100 mx-auto border border-gray-200 rounded-md mt-6 px-4 py-2 text-left">
+  <span class="font-base font-mono">[ Base URL: api.irahorecka.com/housing ]</span>
+</div>
+<hr class="mt-6 mb-8">
 <div class="w-full">
-  <h1 class="font-medium mx-auto pt-10 pb-4">SF Bay Craigslist Housing</h1>
-  <div class="bg-white mx-auto border border-gray-200">
+  <div class="bg-white mx-auto border border-gray-200 rounded-md">
     <ul class="shadow-box">
       <li class="relative border-b border-gray-200" x-data="{selected:null}">
-        <button type="button" class="w-full px-8 py-6 text-left" @click="selected !== 1 ? selected = 1 : selected = null">
-          <div class="flex items-center justify-between">
-            <span>Basic Query</span>
-            <span class="ico-plus"></span>
+        <button type="button" class="w-full px-4 py-3 text-left" @click="selected !== 1 ? selected = 1 : selected = null">
+          <div class="flex justify-start items-center">
+            <span class="px-6 py-2 bg-blue-400 text-white text-sm text-center font-bold rounded-md mr-4">GET</span>
+            <span class="font-bold font-mono text-base">/{site}</span>
           </div>
         </button>
         <div class="relative overflow-hidden transition-all max-h-0 duration-700" style="" x-ref="container1" x-bind:style="selected == 1 ? 'max-height: ' + $refs.container1.scrollHeight + 'px' : ''">
+        <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">
+          <p class="font-bold">Notice</p>
+          <p>Currently, only housing in the San Francisco Bay Area is supported.</p>
+        </div>
           <div class="p-6">
             <p>reCAPTCHA v2 is not going away! We will continue to fully support and improve security and usability for v2.</p>
             <p>reCAPTCHA v3 is intended for power users, site owners that want more data about their traffic, and for use cases in which it is not appropriate to show a challenge to the user.</p>

@@ -16,7 +16,7 @@ def clean_craigslist_housing():
     # Tack on more functions as you see fit.
     rm_old_posts(CraigslistHousing)
     rm_duplicate_posts(CraigslistHousing)
-    rm_low_price(CraigslistHousing)
+    rm_low_prices(CraigslistHousing)
 
 
 def rm_old_posts(model, days=7):
@@ -35,7 +35,7 @@ def rm_duplicate_posts(model):
     db.session.commit()
 
 
-def rm_low_price(model):
+def rm_low_prices(model):
     """Removes posts where `price` is less than 300"""
     model.query.filter(model.price < 300).delete()
     db.session.commit()
