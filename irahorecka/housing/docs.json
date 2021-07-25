@@ -3,18 +3,16 @@
         "request": "GET",
         "endpt": "/{site}",
         "desc": [
-            "Search for housing within a Craigslist <a href='https://www.craigslist.org/about/sites' class='text-yellow-600 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>."
+            "Search for housing within a Craigslist <a href='https://www.craigslist.org/about/sites' class='text-yellow-600 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>.",
+            "Every site will have its own landing page, and the site key is the subdomain of that URL. For example, use <span class='font-mono text-sm'>sfbay</span> from https://sfbay.craigslist.org/, or <span class='font-mono text-sm'>monterey</span> from https://monterey.craigslist.org/."
         ],
         "example": {
-            "desc": "find 100 posts in the San Francisco Bay Area with a minimum price of $1200.",
+            "desc": "Find 100 posts in the SF Bay Area with a minimum price of $1200.",
             "code": "api.irahorecka.com/housing/sfbay?limit=100&min_price=1200"
             },
         "warning": {
             "title": "Notice",
-            "body": {
-                    "sans_serif": "Only the San Francisco Bay Area is supported at the moment. Use: ",
-                    "mono": "sfbay"
-                }
+            "body": "Only the San Francisco Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay</span>"
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},
@@ -35,20 +33,16 @@
         "request": "GET",
         "endpt": "/{site}/{area}",
         "desc": [
-            "This is the first sentence",
-            "This is the second sentence",
-            "This is the third sentence"
+            "Search for housing within a Craigslist area. An area is a sub-region within a <a href='https://www.craigslist.org/about/sites' class='text-yellow-600 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>. If you look at the <a href='https://sfbay.craigslist.org/' class='text-yellow-600 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>SF Bay Area Craigslist page</a>, you'll notice the hyperlinks <span class='font-mono text-sm'>sfc</span>, <span class='font-mono text-sm'>sby</span>, <span class='font-mono text-sm'>eby</span>, <span class='font-mono text-sm'>pen</span>, <span class='font-mono text-sm'>nby</span>, and <span class='font-mono text-sm'>scz</span> at the top.",
+            "If such hyperlinks are present in a Craigslist landing page, you may use these keys to further narrow your query by location. It should be noted that not all sites have areas."
         ],
         "example": {
-            "desc": "find posts with carport parking in the East Bay Area.",
+            "desc": "Find posts with carport parking in the East Bay Area.",
             "code": "api.irahorecka.com/housing/sfbay/eby?parking=carport"
             },
         "warning": {
             "title": "Notice",
-            "body": {
-                    "sans_serif": "Only the San Francisco Bay Area is supported at the moment. Use: ",
-                    "mono": "sfbay/eby, sfbay/nby, sfbay/pen, sfbay/sby, sfbay/scz, sfbay/sfc"
-                }
+            "body": "Only the San Francisco Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay/eby, sfbay/nby, sfbay/pen, sfbay/sby, sfbay/scz, sfbay/sfc</span>"
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},

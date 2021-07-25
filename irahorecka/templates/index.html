@@ -14,9 +14,9 @@
     </p>
     <p>
       If you're looking to find housing in the Bay Area, check out my
-      <a href="/housing" class="text-yellow-600 hover:underline">housing widget</a>.
+      <a href="{{ url_for('housing.home') }}" class="text-yellow-600 hover:underline">housing widget</a>.
       If you're a developer, you can quickly access housing posts through a
-      <a href="http://docs.localhost:5000/housing" class="text-yellow-600 hover:underline">REST API</a>.
+      <a href="{{ url_for('housing.api_docs') }}" class="text-yellow-600 hover:underline">REST API</a>.
     </p>
   </div>
 </div>

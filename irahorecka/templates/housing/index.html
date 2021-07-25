@@ -7,7 +7,7 @@
 <p class="mt-6 text-xl leading-8 text-gray-500">
   There’s plenty of housing offered on Craigslist, but the browsing experience is no fun. Try this tool to find great housing deals for your next move.
   This is also available for developers, check out the API docs
-  <a href="http://docs.localhost:5000/housing" class="text-yellow-600 hover:underline">here</a>.
+  <a href="{{ url_for('housing.api_docs') }}" class="text-yellow-600 hover:underline">here</a>.
 </p>
 <p class="mt-6 text-xl leading-8 text-gray-500">
   The current scope is in the San Francisco Bay Area. Email me if you'd like to see a new location. 🏘️
@@ -42,11 +42,14 @@
           <input name="max_price" type="number" min="1" max="100000" step="1" class="w-1/2 mt-0 p-2 block rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0" placeholder="Max">
         </div>
       </label>
-      <button name="query" id="query" type="submit" hx-post="/housing/query" hx-trigger="click" hx-target="#table" class="bg-blue-500 hover:bg-blue-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full">Search</button>
+      <div class="flex flex-row space-x-2">
+        <input type="submit" id="query" hx-post="/housing/query" value="Search" hx-trigger="click" hx-target="#table" class="w-8/12 bg-blue-500 hover:bg-blue-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
+        <input type="submit" id="query-new" hx-post="/housing/query_new" value="New" hx-trigger="click" hx-target="#table" class="w-4/12 bg-green-500 hover:bg-green-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
+      </div>
       <div id="loadingDiv" class="lds-dual-ring"></div>
     </div>
   </form>
-  <div name="table" id="table" hx-trigger="clicked from:#query">
+  <div name="table" id="table" hx-trigger="clicked from:#query, clicked from:#query-new">
   {% if post is mapping %}
     {% include 'housing/table.html' %}
   {% endif %}
@@ -55,14 +58,17 @@
 <script type="text/javascript">
 var $loading = $('#loadingDiv').hide();
 $(document).ready(function() {
-  $("#query").click(function(e) {
+  $("#query, #query-new").click(function(e) {
     e.preventDefault();
     var data = $(this).serialize();
     var url = $(this).attr('hx-post');
-    $loading.fadeIn(150);
-    $.post(url, data, function(response){
-        $loading.fadeOut(150);
-    });
+    // Will not display if screen size is for mobile / small.
+    if ($(window).width() >= 768) {
+      $loading.fadeIn(150);
+      $.post(url, data, function(response){
+          $loading.fadeOut(150);
+      });
+    };
   });
 });
 </script>
