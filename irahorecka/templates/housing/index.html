@@ -5,8 +5,8 @@
 {% block content %}
 <h1 class="font-extrabold tracking-tight text-gray-900 text-4xl mt-8 lg:mt-0 sm:text-5xl lg:text-6xl">Housing</h1>
 <p class="mt-6 text-xl leading-8 text-gray-500">
-  Finding housing on Craigslist isn't fun. That's why I made this little tool to help you find the best housing deals for your next move.
-  This tool is also available for developers, check out the API docs
+  There’s plenty of housing offered on Craigslist, but the browsing experience is no fun. Try this tool to find great housing deals for your next move.
+  This is also available for developers, check out the API docs
   <a href="http://docs.localhost:5000/housing" class="text-yellow-600 hover:underline">here</a>.
 </p>
 <p class="mt-6 text-xl leading-8 text-gray-500">
@@ -20,12 +20,12 @@
         <span class="text-gray-700">Area</span>
         <select name="area" id="area" hx-post="/housing/neighborhoods" hx-trigger="change, load" hx-target="#neighborhood" class="block w-full p-2 mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0">
           <option>-</option>
-          <option>East Bay</option>
-          <option>North Bay</option>
+          <option>East Bay Area</option>
+          <option>North Bay / Marin</option>
           <option>Peninsula</option>
-          <option>San Francisco</option>
-          <option>Santa Cruz</option>
-          <option>South Bay</option>
+          <option>City of San Francisco</option>
+          <option>Santa Cruz Co</option>
+          <option>South Bay Area</option>
         </select>
       </label>
       <label class="block">

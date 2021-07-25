@@ -44,8 +44,6 @@ def housing_neighborhoods():
 @housing.route("/housing/submit", methods=["POST"])
 def housing_submit():
     params = {key: value.lower() for key, value in request.form.items() if value and value not in ["-"]}
-    # 120 posts per query
-    params["limit"] = 120
     if params.get("area"):
         params["area"] = SFBAY_AREA_KEY[params["area"].title()]
     try:
@@ -64,7 +62,6 @@ def housing_submit():
 @housing.route("/housing/<site>", subdomain="api")
 def api_housing_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
-    # Read up to 1,000,000 items if no limit filter is provided.
     params = {**{"site": site}, **request.args.to_dict()}
     try:
         return jsonify(list(read_craigslist_housing(params)))

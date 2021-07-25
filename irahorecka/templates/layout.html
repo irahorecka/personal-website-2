@@ -5,6 +5,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="description" content="Ira Horecka's website">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
+    <link rel="icon" href="{{ url_for('static', filename="images/hand-lizard-o.png") }}" title="GitHub">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-cards.css') }}">
     {% assets 'css' -%}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
@@ -38,25 +39,20 @@
         <img src="{{ url_for('static', filename=['images/{}'.format(content.profile_img)]) }}" class="p-1 border-1 w-32 xl:w-48 h-32 xl:h-48 rounded-full shadow-lg">
         <div class="text-left text-base m-auto lg:mt-9 ml-6 lg:ml-2">
           <ul class="font-medium">
-            <li>
-              <p class="text-gray-500 mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">PhD Candidate</p>
-            </li>
+            <li><p class="text-gray-500 mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">Student</p></li>
             <li>
               <a class="inline-flex" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
-              <img src="{{ url_for('static', filename="images/github.svg") }}" class="fa-icon m-auto mr-2">
-              GitHub
+              <img src="{{ url_for('static', filename="images/github.svg") }}" class="fa-icon m-auto mr-2">GitHub
               </a>
             </li>
             <li>
               <a class="inline-flex" href="https://www.linkedin.com/in/ira-horecka-3a8877128/" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
-              <img src="{{ url_for('static', filename="images/linkedin.svg") }}" class="fa-icon linkedin-blue max-h-4 m-auto mr-2">
-              LinkedIn
+              <img src="{{ url_for('static', filename="images/linkedin.svg") }}" class="fa-icon linkedin-blue max-h-4 m-auto mr-2">LinkedIn
               </a>
             </li>
             <li>
               <a class="inline-flex" href="mailto:ira.horecka@yahoo.com" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
-              <img src="{{ url_for('static', filename="images/mail.svg") }}" class="fa-icon mail-gray m-auto mr-2">
-              Mail
+              <img src="{{ url_for('static', filename="images/mail.svg") }}" class="fa-icon mail-gray m-auto mr-2">Mail
               </a>
             </li>
           </ul>
