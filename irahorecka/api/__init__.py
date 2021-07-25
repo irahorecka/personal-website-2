@@ -10,11 +10,12 @@ from irahorecka.api.githubrepos.read import read_github_repos
 from irahorecka.api.githubrepos.write import write_github_repos
 
 NEIGHBORHOODS = read_neighborhoods()
+# Sourced from python-craigslist-meta
 SFBAY_AREA_KEY = {
-    "East Bay": "eby",
-    "North Bay": "nby",
+    "East Bay Area": "eby",
+    "North Bay / Marin": "nby",
     "Peninsula": "pen",
-    "San Francisco": "sfc",
-    "Santa Cruz": "scz",
-    "South Bay": "sby",
+    "South Bay Area": "sby",
+    "Santa Cruz Co": "scz",
+    "City of San Francisco": "sfc",
 }

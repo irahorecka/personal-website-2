@@ -73,8 +73,8 @@ def validate_request_args(request_args):
     # Avoid worrying about performance impact from declaration
     schema = {
         "id": {"type": "integer", "coerce": int, "default": 0},
-        # Cast to float then try to validate as integer.
-        "limit": {"type": "integer", "coerce": (float, int), "default": 100_000},
+        # Cast to float then try to validate as integer. Set default limit to 120 posts per query.
+        "limit": {"type": "integer", "coerce": (float, int), "default": 120},
         "area": {"type": "string", "default": ""},
         "site": {"type": "string", "default": ""},
         "neighborhood": {"type": "string", "default": ""},
