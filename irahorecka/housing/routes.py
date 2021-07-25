@@ -37,15 +37,15 @@ def housing_neighborhoods():
     """Takes user selection of region and returns neighborhoods within selection.
     Notice the routing, it is outside of /housing. This is because neighborhoods are agnostic
     to classified listings' categories."""
-    area_key = SFBAY_AREA_KEY.get(request.form.get("area", ""))
+    area_key = SFBAY_AREA_KEY.get(request.form.get("area", "").lower())
     return render_template("housing/neighborhoods.html", neighborhoods=NEIGHBORHOODS.get(area_key, tuple()))
 
 
-@housing.route("/housing/submit", methods=["POST"])
-def housing_submit():
+@housing.route("/housing/query", methods=["POST"])
+def housing_query():
     params = {key: value.lower() for key, value in request.form.items() if value and value not in ["-"]}
     if params.get("area"):
-        params["area"] = SFBAY_AREA_KEY[params["area"].title()]
+        params["area"] = SFBAY_AREA_KEY[params["area"]]
     try:
         posts = list(read_craigslist_housing(params))
     except ValidationError as e:
