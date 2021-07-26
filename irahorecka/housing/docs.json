@@ -4,7 +4,7 @@
         "endpt": "/{site}",
         "desc": [
             "Search for housing within a Craigslist <a href='https://www.craigslist.org/about/sites' class='text-blue-800 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>.",
-            "Every site will have its own landing page, and the site key is the subdomain of that URL. For example, use <span class='font-mono text-sm'>sfbay</span> from https://sfbay.craigslist.org/, or <span class='font-mono text-sm'>monterey</span> from https://monterey.craigslist.org/."
+            "Every site has its own landing page and the site key is the URL's subdomain. For example, use <span class='font-mono text-sm'>sfbay</span> for https://sfbay.craigslist.org/ and <span class='font-mono text-sm'>monterey</span> for https://monterey.craigslist.org/."
         ],
         "example": {
             "desc": "Find 100 posts in the SF Bay Area with a minimum price of $1200.",
@@ -16,7 +16,7 @@
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},
-            {"name": "limit", "desc": "<int> Number of results per request. Default is 120."},
+            {"name": "limit", "desc": "<int> Number of results per request. Default is 50."},
             {"name": "neighborhood", "desc": "<str> Craigslist neighborhood within parent region."},
             {"name": "housing_type", "desc": "<str> Housing type, e.g. 'apartment'."},
             {"name": "laundry", "desc": "<str> Laundry amenities, e.g. 'laundry in bldg'."},
@@ -34,7 +34,7 @@
         "endpt": "/{site}/{area}",
         "desc": [
             "Search for housing within a Craigslist area. An area is a sub-region within a <a href='https://www.craigslist.org/about/sites' class='text-blue-800 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>. If you look at the <a href='https://sfbay.craigslist.org/' class='text-blue-800 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>SF Bay Area Craigslist page</a>, you'll notice the hyperlinks <span class='font-mono text-sm'>sfc</span>, <span class='font-mono text-sm'>sby</span>, <span class='font-mono text-sm'>eby</span>, <span class='font-mono text-sm'>pen</span>, <span class='font-mono text-sm'>nby</span>, and <span class='font-mono text-sm'>scz</span> at the top.",
-            "If such hyperlinks are present in a Craigslist landing page, you may use these keys to further narrow your query by location. It should be noted that not all sites have areas."
+            "If such hyperlinks are present in a Craigslist landing page, you may use these keys to further narrow your query by location. Note: not all sites have areas."
         ],
         "example": {
             "desc": "Find posts with carport parking in the East Bay Area.",
@@ -46,7 +46,7 @@
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},
-            {"name": "limit", "desc": "<int> Number of results per request. Default is 120."},
+            {"name": "limit", "desc": "<int> Number of results per request. Default is 50."},
             {"name": "neighborhood", "desc": "<str> Craigslist neighborhood within parent region."},
             {"name": "housing_type", "desc": "<str> Housing type, e.g. 'apartment'."},
             {"name": "laundry", "desc": "<str> Laundry amenities, e.g. 'laundry in bldg'."},

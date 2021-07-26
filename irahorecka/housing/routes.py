@@ -14,7 +14,8 @@ from irahorecka.housing.utils import (
     get_area_key,
     get_neighborhoods,
     parse_req_form,
-    query_craigslist_housing,
+    query_posts,
+    query_posts_minified,
     read_docs,
     tidy_posts,
 )
@@ -54,7 +55,7 @@ def query():
     """Handles rendering of template from HTMX call to /housing/query.
     Sort returned content by newest posts."""
     parsed_params = parse_req_form(request.form)
-    posts = query_craigslist_housing(parsed_params)
+    posts = query_posts_minified(parsed_params)
     return render_template(
         "housing/table.html",
         posts=sorted(
@@ -68,7 +69,7 @@ def query_score():
     """Handles rendering of template from HTMX call to /housing/query_score.
     Sort returned content by score value."""
     parsed_params = parse_req_form(request.form)
-    posts = query_craigslist_housing(parsed_params)
+    posts = query_posts_minified(parsed_params)
     return render_template(
         "housing/table.html", posts=sorted(tidy_posts(posts), key=lambda x: x["score"], reverse=True)
     )
@@ -82,7 +83,7 @@ def api_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
     params = {**{"site": site}, **request.args.to_dict()}
     try:
-        return jsonify(query_craigslist_housing(params))
+        return jsonify(query_posts(params))
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -94,7 +95,7 @@ def api_site_area(site, area):
     params = {**{"site": site, "area": area}, **request.args.to_dict()}
     try:
         # Only allow 100 posts to display
-        return jsonify(query_craigslist_housing(params))
+        return jsonify(query_posts(params))
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 

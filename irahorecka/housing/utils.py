@@ -52,7 +52,11 @@ def parse_req_form(request_form):
     return params
 
 
-def query_craigslist_housing(params):
+def query_posts_minified(params):
+    return list(read_craigslist_housing(params, minified=True))
+
+
+def query_posts(params):
     """Returns iterable of Craigslist Housing posts that is within confinement of parameters
     provided by caller."""
     return list(read_craigslist_housing(params))
