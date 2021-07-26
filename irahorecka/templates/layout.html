@@ -24,12 +24,12 @@
     <header class="header header--fixed" role="banner">
       <nav class="site-nav site-header max-w-7xl m-auto">
         <div class="nav-left">
-          <a href="{{ url_for('main.home') }}" class="title hover:text-yellow-600">irahorecka.com</a>
+          <a href="{{ url_for('main.home') }}" class="title hover:underline">irahorecka.com</a>
         </div>
         <div class="nav-right">
-          <a href="{{ url_for('main.home') }}" class="hover:text-yellow-600">home</a>
-          <a href="{{ url_for('housing.home') }}" class="hover:text-yellow-600">housing</a>
-          <a href="{{ url_for('main.projects') }}" class="hover:text-yellow-600">projects</a>
+          <a href="{{ url_for('main.home') }}" class="hover:underline">home</a>
+          <a href="{{ url_for('housing.home') }}" class="hover:underline">housing</a>
+          <a href="{{ url_for('main.projects') }}" class="hover:underline">projects</a>
           <a href="javascript:void(0);" class="nav-toggle">☰</a>
         </div>
       </nav>
@@ -41,17 +41,17 @@
           <ul class="font-medium">
             <li><p class="text-gray-500 mb-1 lg:mb-3 w-32 md:w-48 lg:w-full">Student</p></li>
             <li>
-              <a class="inline-flex" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+              <a class="inline-flex hover:underline" href="https://github.com/irahorecka" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
               <img src="{{ url_for('static', filename="images/github.svg") }}" class="fa-icon m-auto mr-2">GitHub
               </a>
             </li>
             <li>
-              <a class="inline-flex" href="https://www.linkedin.com/in/ira-horecka-3a8877128/" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+              <a class="inline-flex hover:underline" href="https://www.linkedin.com/in/ira-horecka-3a8877128/" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
               <img src="{{ url_for('static', filename="images/linkedin.svg") }}" class="fa-icon linkedin-blue max-h-4 m-auto mr-2">LinkedIn
               </a>
             </li>
             <li>
-              <a class="inline-flex" href="mailto:ira.horecka@yahoo.com" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
+              <a class="inline-flex hover:underline" href="mailto:ira.horecka@yahoo.com" rel="noopener noreferrer" target="_blank" onclick="this.blur();">
               <img src="{{ url_for('static', filename="images/mail.svg") }}" class="fa-icon mail-gray m-auto mr-2">Mail
               </a>
             </li>

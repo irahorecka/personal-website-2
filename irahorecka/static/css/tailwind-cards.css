@@ -637,17 +637,10 @@ video {
 .prose h4:before,
 .prose h5:before,
 .prose h6:before {
-	color: #d97706;
+	color: #005fcc;
 	opacity: 1;;
 	content: "#";
 	margin-right: .75rem
-}
-
-a:active,
-a:focus,
-a:hover {
-	color: #d97706;
-	opacity: 1;
 }
 
 .language:before {
@@ -950,7 +943,7 @@ a:hover {
 }
 
 .hover\:bg-garnet:hover {
-	background-color: #d97706;
+	background-color: #005fcc;
 	opacity: 1;
 }
 
@@ -968,7 +961,7 @@ a:hover {
 }
 
 .focus\:bg-garnet:focus {
-	background-color: #d97706;
+	background-color: #005fcc;
 	opacity: 1;
 }
 
