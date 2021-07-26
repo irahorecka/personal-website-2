@@ -45,18 +45,8 @@ def neighborhoods():
 
 @housing.route("/housing/query", methods=["POST"])
 def query():
-    parsed_params = parse_query_form(request.form)
-    posts = list(read_craigslist_housing(parsed_params))
-    return render_template(
-        "housing/table.html", posts=sorted(tidy_posts(posts), key=lambda x: x["score"], reverse=True)
-    )
-
-
-@housing.route("/housing/query_new", methods=["POST"])
-def query_new():
-    """Handles rendering of template from HTMX call to /housing/query_new.
-    For the life of me I cannot figure out how to reflect the input name in
-    request.form, else I could parse this in `query`. Therefore, this function exists."""
+    """Handles rendering of template from HTMX call to /housing/query.
+    Sort returned content by newest posts."""
     parsed_params = parse_query_form(request.form)
     posts = list(read_craigslist_housing(parsed_params))
     return render_template(
@@ -64,6 +54,17 @@ def query_new():
         posts=sorted(
             tidy_posts(posts), key=lambda x: datetime.strptime(x["last_updated"], "%Y-%m-%d %H:%M"), reverse=True
         ),
+    )
+
+
+@housing.route("/housing/query_score", methods=["POST"])
+def query_score():
+    """Handles rendering of template from HTMX call to /housing/query_score.
+    Sort returned content by score value."""
+    parsed_params = parse_query_form(request.form)
+    posts = list(read_craigslist_housing(parsed_params))
+    return render_template(
+        "housing/table.html", posts=sorted(tidy_posts(posts), key=lambda x: x["score"], reverse=True)
     )
 
 

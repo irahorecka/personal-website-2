@@ -44,21 +44,23 @@
       </label>
       <div class="flex flex-row space-x-2">
         <input type="submit" id="query" hx-post="/housing/query" value="Search" hx-trigger="click" hx-target="#table" class="w-8/12 bg-blue-500 hover:bg-blue-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
-        <input type="submit" id="query-new" hx-post="/housing/query_new" value="New" hx-trigger="click" hx-target="#table" class="w-4/12 bg-green-500 hover:bg-green-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
+        <input type="submit" id="query-score" hx-post="/housing/query_score" value="Score" hx-trigger="click" hx-target="#table" class="w-4/12 bg-green-500 hover:bg-green-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
       </div>
       <div id="loadingDiv" class="lds-dual-ring"></div>
     </div>
   </form>
-  <div name="table" id="table" hx-trigger="clicked from:#query, clicked from:#query-new">
+  <div name="table" id="table" hx-trigger="clicked from:#query, clicked from:#query-score">
   {% if post is mapping %}
     {% include 'housing/table.html' %}
   {% endif %}
   </div>
 </div>
+{% endblock content %}
+{% block script %}
 <script type="text/javascript">
 var $loading = $('#loadingDiv').hide();
 $(document).ready(function() {
-  $("#query, #query-new").click(function(e) {
+  $("#query, #query-score").click(function(e) {
     e.preventDefault();
     var data = $(this).serialize();
     var url = $(this).attr('hx-post');
@@ -72,4 +74,4 @@ $(document).ready(function() {
   });
 });
 </script>
-{% endblock content %}
+{% endblock script%}
