@@ -30,7 +30,7 @@
       </label>
       <label class="block">
       <span class="text-gray-700">Neighborhood</span>
-      <select name="neighborhood" id="neighborhood" hx-trigger="changed from:#area" class="block w-full p-2 mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0">
+      <select name="neighborhood" id="neighborhood" class="block w-full p-2 mt-1 rounded-md bg-gray-100 border-transparent focus:border-gray-500 focus:bg-white focus:ring-0">
       {% include 'housing/neighborhoods.html' %}
       </select>
       </label>
@@ -43,13 +43,13 @@
         </div>
       </label>
       <div class="flex flex-row space-x-2">
-        <input type="submit" id="query" hx-post="/housing/query" value="Search" hx-trigger="click" hx-target="#table" class="w-8/12 bg-blue-500 hover:bg-blue-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
-        <input type="submit" id="query-score" hx-post="/housing/query_score" value="Score" hx-trigger="click" hx-target="#table" class="w-4/12 bg-green-500 hover:bg-green-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
+        <input type="submit" id="query" value="Search" hx-post="/housing/query" hx-trigger="click" hx-target="#table" class="w-8/12 bg-blue-500 hover:bg-blue-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
+        <input type="submit" id="query-score" value="Score" hx-post="/housing/query_score" hx-trigger="click" hx-target="#table" class="w-4/12 bg-green-500 hover:bg-green-700 focus:outline-none text-white font-bold py-2 px-4 rounded-full"></input>
       </div>
       <div id="loadingDiv" class="lds-dual-ring"></div>
     </div>
   </form>
-  <div name="table" id="table" hx-trigger="clicked from:#query, clicked from:#query-score">
+  <div name="table" id="table">
   {% if post is mapping %}
     {% include 'housing/table.html' %}
   {% endif %}

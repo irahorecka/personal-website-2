@@ -9,9 +9,15 @@ from datetime import datetime
 
 from flask import render_template, request, jsonify, Blueprint
 
-from irahorecka.api import read_craigslist_housing, NEIGHBORHOODS, SFBAY_AREA_KEY
 from irahorecka.exceptions import InvalidUsage, ValidationError
-from irahorecka.housing.utils import tidy_posts, read_docs
+from irahorecka.housing.utils import (
+    get_area_key,
+    get_neighborhoods,
+    parse_req_form,
+    query_craigslist_housing,
+    read_docs,
+    tidy_posts,
+)
 
 housing = Blueprint("housing", __name__)
 
@@ -39,16 +45,16 @@ def neighborhoods():
     """Takes user selection of region and returns neighborhoods within selection.
     Notice the routing, it is outside of /housing. This is because neighborhoods are agnostic
     to classified listings' categories."""
-    area_key = SFBAY_AREA_KEY.get(request.form.get("area", "").lower())
-    return render_template("housing/neighborhoods.html", neighborhoods=NEIGHBORHOODS.get(area_key, tuple()))
+    area_key = get_area_key(request.form.get("area", "").lower())
+    return render_template("housing/neighborhoods.html", neighborhoods=get_neighborhoods(area_key))
 
 
 @housing.route("/housing/query", methods=["POST"])
 def query():
     """Handles rendering of template from HTMX call to /housing/query.
     Sort returned content by newest posts."""
-    parsed_params = parse_query_form(request.form)
-    posts = list(read_craigslist_housing(parsed_params))
+    parsed_params = parse_req_form(request.form)
+    posts = query_craigslist_housing(parsed_params)
     return render_template(
         "housing/table.html",
         posts=sorted(
@@ -61,18 +67,11 @@ def query():
 def query_score():
     """Handles rendering of template from HTMX call to /housing/query_score.
     Sort returned content by score value."""
-    parsed_params = parse_query_form(request.form)
-    posts = list(read_craigslist_housing(parsed_params))
+    parsed_params = parse_req_form(request.form)
+    posts = query_craigslist_housing(parsed_params)
     return render_template(
         "housing/table.html", posts=sorted(tidy_posts(posts), key=lambda x: x["score"], reverse=True)
     )
-
-
-def parse_query_form(request_form):
-    params = {key: value.lower() for key, value in request_form.items() if value and value not in ["-"]}
-    if params.get("area"):
-        params["area"] = SFBAY_AREA_KEY[params["area"]]
-    return params
 
 
 #  ~~~~~~~~~~ BEGIN RESTFUL API ~~~~~~~~~~
@@ -83,7 +82,7 @@ def api_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
     params = {**{"site": site}, **request.args.to_dict()}
     try:
-        return jsonify(list(read_craigslist_housing(params)))
+        return jsonify(query_craigslist_housing(params))
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -95,7 +94,7 @@ def api_site_area(site, area):
     params = {**{"site": site, "area": area}, **request.args.to_dict()}
     try:
         # Only allow 100 posts to display
-        return jsonify(list(read_craigslist_housing(params)))
+        return jsonify(query_craigslist_housing(params))
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 

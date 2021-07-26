@@ -11,7 +11,7 @@ from irahorecka.api.githubrepos.write import write_github_repos
 
 NEIGHBORHOODS = read_neighborhoods()
 # Sourced from python-craigslist-meta - set to lower casing for case-agnostic lookups
-SFBAY_AREA_KEY = {
+AREA_KEY = {
     "east bay area": "eby",
     "north bay / marin": "nby",
     "peninsula": "pen",
