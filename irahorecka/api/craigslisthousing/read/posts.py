@@ -9,21 +9,9 @@ from irahorecka.exceptions import ValidationError
 from irahorecka.models import CraigslistHousing
 
 
-def read_craigslist_housing(request_args):
+def read_craigslist_housing(request_args, minified=False):
     """Reads and returns SF Bay Area Craigslist Housing posts as a list of dictionaries
     up to the provided limit."""
-
-    def nullify_empty_value(value):
-        """Returns None for a non-truthful value (e.g. 0, "", False)."""
-        return None if not value else value
-
-    def cast(dtype, value, fallback):
-        """Attempts to cast `dtype` to `value`. Returns `fallback` if failed."""
-        try:
-            return dtype(value)
-        except (ValueError, TypeError):
-            return fallback
-
     v_status, v_args = validate_request_args(request_args)
     # Raise ValidationError to caller if parsing of request args failed
     if not v_status:
@@ -31,38 +19,10 @@ def read_craigslist_housing(request_args):
 
     limit = v_args["limit"]
     filtered_housing_query = filter_requests_query(CraigslistHousing, v_args)
-    for idx, post in enumerate(filtered_housing_query):
-        if idx == limit:
-            return
-        yield {
-            # Metadata
-            "id": post.id,
-            "repost_of": nullify_empty_value(post.repost_of),
-            "last_updated": datetime.strftime(post.last_updated, "%Y-%m-%d %H:%M"),
-            "url": post.url,
-            # Location
-            "site": post.site,
-            "area": post.area,
-            "neighborhood": nullify_empty_value(post.neighborhood),
-            "address": nullify_empty_value(post.address),
-            "lat": nullify_empty_value(post.lat),
-            "lon": nullify_empty_value(post.lon),
-            # Post
-            "title": post.title,
-            "price": f"${cast(str, post.price, '')}",
-            "housing_type": nullify_empty_value(post.housing_type),
-            "bedrooms": cast(int, post.bedrooms, None),
-            "flooring": nullify_empty_value(post.flooring),
-            # `is_furnished` and `no_smoking` are booleans - nullify if False; usually indicative of missing data.
-            "is_furnished": nullify_empty_value(post.is_furnished),
-            "no_smoking": nullify_empty_value(post.no_smoking),
-            "ft2": nullify_empty_value(post.ft2),
-            "laundry": nullify_empty_value(post.laundry),
-            "rent_period": nullify_empty_value(post.rent_period),
-            "parking": nullify_empty_value(post.parking),
-            "misc": post.misc.split(";"),
-            "score": cast(int, post.score, 0),
-        }
+    if not minified:
+        yield from fetch_content(filtered_housing_query, CraigslistHousing, limit)
+    else:
+        yield from fetch_content_minified(filtered_housing_query, CraigslistHousing, limit)
 
 
 def validate_request_args(request_args):
@@ -73,8 +33,8 @@ def validate_request_args(request_args):
     # Avoid worrying about performance impact from declaration
     schema = {
         "id": {"type": "integer", "coerce": int, "default": 0},
-        # Cast to float then try to validate as integer. Set default limit to 120 posts per query.
-        "limit": {"type": "integer", "coerce": (float, int), "default": 120},
+        # Cast to float then try to validate as integer. Set default limit to 50 posts per query.
+        "limit": {"type": "integer", "coerce": (float, int), "default": 50},
         "area": {"type": "string", "default": ""},
         "site": {"type": "string", "default": ""},
         "neighborhood": {"type": "string", "default": ""},
@@ -97,8 +57,9 @@ def validate_request_args(request_args):
 def filter_requests_query(model, validated_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
     in `validated_args`."""
+    # If an ID was provided in the query, return post with ID immediately
     if validated_args.get("id"):
-        return (model.query.get(validated_args["id"]),)
+        return tuple(model.query.get(validated_args["id"]))
     query = filter_categorical(model.query, model, validated_args)
     return filter_scalar(query, model, validated_args)
 
@@ -130,3 +91,68 @@ def filter_scalar(query, model, validated_args):
         .filter(model.price >= validated_args["min_price"])
         .filter(model.price <= validated_args["max_price"])
     )
+
+
+def fetch_content(filtered_query, model, limit):
+    # Apparently, instantiation of a model object is negated if we work with entities
+    # because we work with tuples of column data.
+    # fmt: off
+    posts = filtered_query.with_entities(
+        model.id, model.repost_of, model.last_updated, model.url, model.site, model.area,
+        model.neighborhood, model.address, model.lat, model.lon, model.title, model.price,
+        model.housing_type, model.bedrooms, model.flooring, model.is_furnished, model.no_smoking,
+        model.ft2, model.laundry, model.rent_period, model.parking, model.misc, model.score,
+    )
+    # fmt: on
+    for idx, post in enumerate(posts):
+        if idx == limit:
+            return
+        yield {
+            # Metadata
+            "id": post.id,
+            "repost_of": post.repost_of,
+            "last_updated": datetime.strftime(post.last_updated, "%Y-%m-%d %H:%M"),
+            "url": post.url,
+            # Location
+            "site": post.site,
+            "area": post.area,
+            "neighborhood": post.neighborhood,
+            "address": post.address,
+            "lat": post.lat,
+            "lon": post.lon,
+            # Post
+            "title": post.title,
+            "price": f"${post.price}",
+            "housing_type": post.housing_type,
+            # Bedrooms in model is float type.
+            "bedrooms": int(post.bedrooms),
+            "flooring": post.flooring,
+            # `is_furnished` and `no_smoking` are booleans - nullify if False; usually indicative of missing data.
+            "is_furnished": post.is_furnished,
+            "no_smoking": post.no_smoking,
+            "ft2": post.ft2,
+            "laundry": post.laundry,
+            "rent_period": post.rent_period,
+            "parking": post.parking,
+            "misc": post.misc.split(";"),
+            "score": post.score,
+        }
+
+
+def fetch_content_minified(filtered_query, model, limit):
+    posts = filtered_query.with_entities(
+        model.last_updated, model.url, model.title, model.price, model.bedrooms, model.score
+    )
+    for idx, post in enumerate(posts):
+        if idx == limit:
+            return
+        yield {
+            # Metadata
+            "last_updated": datetime.strftime(post.last_updated, "%Y-%m-%d %H:%M"),
+            "url": post.url,
+            # Post
+            "title": post.title,
+            "price": f"${post.price}",
+            "bedrooms": int(post.bedrooms),
+            "score": post.score,
+        }

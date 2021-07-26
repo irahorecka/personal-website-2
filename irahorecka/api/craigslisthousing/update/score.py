@@ -46,6 +46,7 @@ class Score:
     """Base class for calculating score of a post."""
 
     def __init__(self, model, query_site, query_area):
+        # `query_area` must be a child query of `query_site`
         self.model = model
         self.query_site = query_site
         self.query_area = query_area
@@ -54,14 +55,14 @@ class Score:
         """Set up instance to have subsequent queries work with 0.5 bedrooms instead of 0.
         This is for the scoring criteria in `_calculate_post_score`, where we deal with the
         logarithms of the number of bedrooms."""
+        # Because `query_area` is a child query of `query_site`, we do not have to manipulate `query_area`.
         self.query_site.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
-        self.query_area.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
-        """Set queries with 0.5 bedrooms (from `__enter__`) to 0."""
+        """Set queries with 0.5 bedrooms (from `__enter__`) to 0 and set null scores to 0."""
         self.query_site.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
-        self.query_area.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
+        self.query_site.filter(self.model.score.is_(None)).update({self.model.score: 0})
 
     def _calculate_post_score(self, site_z_score, area_z_score):
         """Calculates value score for every post. Read description below for calc breakdown:
