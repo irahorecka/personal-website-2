@@ -5,6 +5,8 @@ from irahorecka import db
 
 
 class GitHubRepo(db.Model):
+    """Model from a GitHub repository."""
+
     __tablename__ = "githubrepo"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
@@ -24,6 +26,8 @@ class GitHubRepo(db.Model):
 
 
 class RepoLanguage(db.Model):
+    """Model from a GitHub repository's language(s)."""
+
     __tablename__ = "repolanguage"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80))
@@ -35,6 +39,8 @@ class RepoLanguage(db.Model):
 
 
 class CraigslistHousing(db.Model):
+    """Model from Craigslist Housing post attributes."""
+
     __tablename__ = "craigslisthousing"
     # `id` is the Craigslist's post ID
     id = db.Column(db.BigInteger, primary_key=True)

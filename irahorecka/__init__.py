@@ -17,6 +17,7 @@ css = Bundle("src/main.css", output="dist/main.css", filters="postcss")
 
 
 def create_app(config_class=Config):
+    """Creates Flask application instance."""
     app = Flask(__name__)
     app.config.from_object(Config)
     CORS(app)
@@ -28,8 +29,10 @@ def create_app(config_class=Config):
 
     from irahorecka.main.routes import main
     from irahorecka.housing.routes import housing
+    from irahorecka.errors.handlers import errors
 
     app.register_blueprint(main)
     app.register_blueprint(housing)
+    app.register_blueprint(errors)
 
     return app

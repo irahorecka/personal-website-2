@@ -135,7 +135,8 @@ def fetch_content(filtered_query, model, limit):
             "rent_period": post.rent_period,
             "parking": post.parking,
             "misc": post.misc.split(";"),
-            "score": post.score,
+            # Score in model is float type.
+            "score": int(post.score),
         }
 
 
@@ -154,5 +155,5 @@ def fetch_content_minified(filtered_query, model, limit):
             "title": post.title,
             "price": f"${post.price}",
             "bedrooms": int(post.bedrooms),
-            "score": post.score,
+            "score": int(post.score),
         }

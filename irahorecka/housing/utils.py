@@ -1,7 +1,7 @@
 import json
 from pathlib import Path
 
-from irahorecka.api import read_craigslist_housing, AREA_KEY, NEIGHBORHOODS
+from irahorecka.api import AREA_KEY, NEIGHBORHOODS
 
 DOCS_PATH = Path(__file__).absolute().parent.joinpath("docs.json")
 SCORE_COLORS = {
@@ -45,21 +45,11 @@ def get_score_color(score):
 
 
 def parse_req_form(request_form):
-    """Parses request form provided by caller."""
+    """Parses request form provided by caller and returns parameters dict."""
     params = {key: value.lower() for key, value in request_form.items() if value and value not in ["-"]}
     if params.get("area"):
         params["area"] = get_area_key(params["area"])
     return params
-
-
-def query_posts_minified(params):
-    return list(read_craigslist_housing(params, minified=True))
-
-
-def query_posts(params):
-    """Returns iterable of Craigslist Housing posts that is within confinement of parameters
-    provided by caller."""
-    return list(read_craigslist_housing(params))
 
 
 def read_docs():

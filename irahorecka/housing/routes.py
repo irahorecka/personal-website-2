@@ -7,28 +7,19 @@ Ira Horecka - July 2021
 """
 from datetime import datetime
 
-from flask import render_template, request, jsonify, Blueprint
+from flask import jsonify, render_template, request, Blueprint
 
+from irahorecka.api import read_craigslist_housing
 from irahorecka.exceptions import InvalidUsage, ValidationError
 from irahorecka.housing.utils import (
     get_area_key,
     get_neighborhoods,
     parse_req_form,
-    query_posts,
-    query_posts_minified,
     read_docs,
     tidy_posts,
 )
 
 housing = Blueprint("housing", __name__)
-
-
-@housing.errorhandler(InvalidUsage)
-def handle_invalid_usage(error):
-    """Handles invalid usage from REST-like api."""
-    response = jsonify(error.to_dict())
-    response.status_code = error.status_code
-    return response
 
 
 @housing.route("/housing")
@@ -55,7 +46,8 @@ def query():
     """Handles rendering of template from HTMX call to /housing/query.
     Sort returned content by newest posts."""
     parsed_params = parse_req_form(request.form)
-    posts = query_posts_minified(parsed_params)
+    # Fetch minified posts - don't need all that info.
+    posts = list(read_craigslist_housing(parsed_params, minified=True))
     return render_template(
         "housing/table.html",
         posts=sorted(
@@ -69,7 +61,7 @@ def query_score():
     """Handles rendering of template from HTMX call to /housing/query_score.
     Sort returned content by score value."""
     parsed_params = parse_req_form(request.form)
-    posts = query_posts_minified(parsed_params)
+    posts = list(read_craigslist_housing(parsed_params, minified=True))
     return render_template(
         "housing/table.html", posts=sorted(tidy_posts(posts), key=lambda x: x["score"], reverse=True)
     )
@@ -83,7 +75,8 @@ def api_site(site):
     """REST-like API for Craigslist housing - querying with Craigslist site."""
     params = {**{"site": site}, **request.args.to_dict()}
     try:
-        return jsonify(query_posts(params))
+        posts = list(read_craigslist_housing(params))
+        return jsonify(posts)
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -94,8 +87,8 @@ def api_site_area(site, area):
     and area."""
     params = {**{"site": site, "area": area}, **request.args.to_dict()}
     try:
-        # Only allow 100 posts to display
-        return jsonify(query_posts(params))
+        posts = list(read_craigslist_housing(params))
+        return jsonify(posts)
     except ValidationError as e:
         raise InvalidUsage(str(e).capitalize(), status_code=400) from e
 
@@ -109,3 +102,11 @@ def api_docs():
         "docs": read_docs(),
     }
     return render_template("housing/docs.html", content=content)
+
+
+@housing.errorhandler(InvalidUsage)
+def handle_invalid_usage(error):
+    """Handles invalid usage from REST-like api."""
+    response = jsonify(error.to_dict())
+    response.status_code = error.status_code
+    return response
