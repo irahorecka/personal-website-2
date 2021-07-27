@@ -10,7 +10,7 @@ from irahorecka.models import db, CraigslistHousing
 def write_craigslist_housing_score(site, areas):
     """ENTRY POINT: Assigns and writes Craigslist housing value scores to posts. Posts
     without a score are left as N/A."""
-    query = preliminary_filter(CraigslistHousing.query, CraigslistHousing)
+    query = preliminary_filter(CraigslistHousing, CraigslistHousing.query)
     query_site = query.filter(CraigslistHousing.site == site)
     query_site_ft2 = query_site.filter(CraigslistHousing.ft2 != 0)
     query_site_sans_ft2 = query_site.filter(CraigslistHousing.ft2 == 0)
@@ -24,17 +24,19 @@ def write_craigslist_housing_score(site, areas):
         with Ft2(CraigslistHousing, query_site_ft2, query_area_ft2) as ft2:
             ft2.write_score(query_area_ft2)
         # Posts with and without filters are scored differently - normalize scores before grouping
-        normalize_score(query_area_ft2, CraigslistHousing, -100, 100)
+        normalize_score(CraigslistHousing, query_area_ft2, -100, 100)
         # Calculate score for posts with price without ft2
         with Bedrooms(CraigslistHousing, query_site, query_area) as bedrooms:
             bedrooms.write_score(query_area_sans_ft2)
         # Posts without ft2 have scores not as effective as posts with ft2 - set range to -90, 90
-        normalize_score(query_area_sans_ft2, CraigslistHousing, -90, 90)
+        normalize_score(CraigslistHousing, query_area_sans_ft2, -90, 90)
 
+    # Set null scores to 0 to maintain num datatype
+    query_site.filter(CraigslistHousing.score.is_(None)).update({CraigslistHousing.score: 0})
     db.session.commit()
 
 
-def preliminary_filter(query, model):
+def preliminary_filter(model, query):
     """Performs preliminary filters to a query and model. Use to clean up query prior to performing
     statistical analysis."""
     # If 'studio' anywhere in the title, force bedrooms to reflect studio property.
@@ -55,14 +57,14 @@ class Score:
         """Set up instance to have subsequent queries work with 0.5 bedrooms instead of 0.
         This is for the scoring criteria in `_calculate_post_score`, where we deal with the
         logarithms of the number of bedrooms."""
-        # Because `query_area` is a child query of `query_site`, we do not have to manipulate `query_area`.
         self.query_site.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
+        self.query_area.filter(self.model.bedrooms == 0).update({self.model.bedrooms: 0.5})
         return self
 
     def __exit__(self, exc_type, exc_value, exc_tb):
         """Set queries with 0.5 bedrooms (from `__enter__`) to 0 and set null scores to 0."""
         self.query_site.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
-        self.query_site.filter(self.model.score.is_(None)).update({self.model.score: 0})
+        self.query_area.filter(self.model.bedrooms == 0.5).update({self.model.bedrooms: 0})
 
     def _calculate_post_score(self, site_z_score, area_z_score):
         """Calculates value score for every post. Read description below for calc breakdown:
@@ -199,7 +201,7 @@ class Bedrooms(Score):
         return query.filter(and_(self.model.price > 0, self.model.bedrooms > 0, self.model.bedrooms < 8))
 
 
-def normalize_score(query, model, min_score, max_score):
+def normalize_score(model, query, min_score, max_score):
     """Normalizes score to fall within -100 and +100. of what's low and high, respectively."""
     # Update all model.score value with NoneType to be the average of min and max normalized scores
     query.filter(model.score == 0).update({model.score: (min_score + max_score) / 2})

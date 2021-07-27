@@ -91,5 +91,4 @@ def yield_apa_filters():
     yield from [
         {"min_price": min_price, "max_price": max_price}
         for min_price, max_price in zip(range(0, 8000, 500), range(500, 8500, 500))
-        # for min_price, max_price in ((1000, 2000),)
     ]

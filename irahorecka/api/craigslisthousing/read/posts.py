@@ -16,13 +16,13 @@ def read_craigslist_housing(request_args, minified=False):
     # Raise ValidationError to caller if parsing of request args failed
     if not v_status:
         raise ValidationError(v_args)
-
-    limit = v_args["limit"]
-    filtered_housing_query = filter_requests_query(CraigslistHousing, v_args)
+    # Set maximum limit to 3000 per call
+    limit = min(v_args["limit"], 3_000)
+    filtered_query = filter_query(CraigslistHousing, v_args)
     if not minified:
-        yield from fetch_content(filtered_housing_query, CraigslistHousing, limit)
+        yield from fetch_content(CraigslistHousing, filtered_query, limit)
     else:
-        yield from fetch_content_minified(filtered_housing_query, CraigslistHousing, limit)
+        yield from fetch_content_minified(CraigslistHousing, filtered_query, limit)
 
 
 def validate_request_args(request_args):
@@ -54,17 +54,17 @@ def validate_request_args(request_args):
     return (True, v.normalized(request_args))
 
 
-def filter_requests_query(model, validated_args):
+def filter_query(model, validated_args):
     """Returns filtered db.Model.query object to caller, filtered by arguments
     in `validated_args`."""
     # If an ID was provided in the query, return post with ID immediately
     if validated_args.get("id"):
         return tuple(model.query.get(validated_args["id"]))
-    query = filter_categorical(model.query, model, validated_args)
-    return filter_scalar(query, model, validated_args)
+    query = filter_categorical(model, model.query, validated_args)
+    return filter_scalar(model, query, validated_args)
 
 
-def filter_categorical(query, model, validated_args):
+def filter_categorical(model, query, validated_args):
     """Filters categorical attributes of the requests query.
     E.g. `neighborhood=fremont / union city / newark`."""
     categorical_filter = {
@@ -80,7 +80,7 @@ def filter_categorical(query, model, validated_args):
     return query
 
 
-def filter_scalar(query, model, validated_args):
+def filter_scalar(model, query, validated_args):
     """Filters scalar attributes of the requests query.
     E.g. `min_price=1000`."""
     return (
@@ -93,11 +93,12 @@ def filter_scalar(query, model, validated_args):
     )
 
 
-def fetch_content(filtered_query, model, limit):
+def fetch_content(model, query, limit):
+    """Fetches posts from the database with detailed content."""
     # Apparently, instantiation of a model object is negated if we work with entities
-    # because we work with tuples of column data.
+    # because we work with tuples of column data - good for speed.
     # fmt: off
-    posts = filtered_query.with_entities(
+    posts = query.with_entities(
         model.id, model.repost_of, model.last_updated, model.url, model.site, model.area,
         model.neighborhood, model.address, model.lat, model.lon, model.title, model.price,
         model.housing_type, model.bedrooms, model.flooring, model.is_furnished, model.no_smoking,
@@ -127,7 +128,6 @@ def fetch_content(filtered_query, model, limit):
             # Bedrooms in model is float type.
             "bedrooms": int(post.bedrooms),
             "flooring": post.flooring,
-            # `is_furnished` and `no_smoking` are booleans - nullify if False; usually indicative of missing data.
             "is_furnished": post.is_furnished,
             "no_smoking": post.no_smoking,
             "ft2": post.ft2,
@@ -140,10 +140,9 @@ def fetch_content(filtered_query, model, limit):
         }
 
 
-def fetch_content_minified(filtered_query, model, limit):
-    posts = filtered_query.with_entities(
-        model.last_updated, model.url, model.title, model.price, model.bedrooms, model.score
-    )
+def fetch_content_minified(model, query, limit):
+    """Fetches posts from the database with minified content."""
+    posts = query.with_entities(model.last_updated, model.url, model.title, model.price, model.bedrooms, model.score)
     for idx, post in enumerate(posts):
         if idx == limit:
             return
