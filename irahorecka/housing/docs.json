@@ -4,7 +4,7 @@
         "endpt": "/{site}",
         "desc": [
             "Search for housing within a Craigslist <a href='https://www.craigslist.org/about/sites' class='text-blue-800 hover:underline' rel='noopener noreferrer' target='_blank' onclick='this.blur();'>site</a>.",
-            "Every site has its own landing page and the site key is the URL's subdomain. For example, use <span class='font-mono text-sm'>sfbay</span> for https://sfbay.craigslist.org/ and <span class='font-mono text-sm'>monterey</span> for https://monterey.craigslist.org/."
+            "Every site has a landing page and the URL's subdomain is the site's key. For example, use <span class='font-mono text-sm'>sfbay</span> for https://sfbay.craigslist.org/ and <span class='font-mono text-sm'>monterey</span> for https://monterey.craigslist.org/."
         ],
         "example": {
             "desc": "Find 100 posts in the SF Bay Area with a minimum price of $1200.",
@@ -12,7 +12,7 @@
             },
         "warning": {
             "title": "Notice",
-            "body": "Only the San Francisco Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay</span>"
+            "body": "Only the SF Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay</span>"
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},
@@ -42,7 +42,7 @@
             },
         "warning": {
             "title": "Notice",
-            "body": "Only the San Francisco Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay/eby, sfbay/nby, sfbay/pen, sfbay/sby, sfbay/scz, sfbay/sfc</span>"
+            "body": "Only the SF Bay Area is supported at the moment. Use: <span class='font-mono text-sm'>sfbay/eby, sfbay/nby, sfbay/pen, sfbay/sby, sfbay/scz, sfbay/sfc</span>"
         },
         "params": [
             {"name": "id", "desc": "<int> Craigslist post ID."},

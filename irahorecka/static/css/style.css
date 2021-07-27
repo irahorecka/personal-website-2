@@ -19,9 +19,11 @@ th+th {
 
 /* For `.github-*` view irahorecka/templates/projects.html */
 a.github-link:active,
-a.github-link:focus {
+a.github-link:focus,
+a.github-link:hover {
     color: #000000;
     opacity: 1;
+    text-decoration-thickness: 2px;
 }
 
 .fixed-head {
