@@ -21,6 +21,7 @@ cd ../;
 
 # ----- Move production files and replace -----
 mv ./prod/config.yaml ./config.yaml;
+mv ./prod/passenger_wsgi.py ./passenger_wsgi.py;
 mv ./prod/run.py ./run.py;
 mv ./prod/irahorecka/__init__.py ./irahorecka/__init__.py;
 mv ./prod/irahorecka/templates/layout.html ./irahorecka/templates/layout.html;
