@@ -1,6 +1,7 @@
 """
 """
 
+import time
 from datetime import datetime
 
 import pycraigslist
@@ -71,8 +72,8 @@ def fetch_craigslist_apa(*args, **kwargs):
 
 def yield_apa(site, areas):
     """Yields detailed posts from pycraigslist.housing.apa instances."""
-    # Query pycraigslist instances even if there's a connection error.
-    while True:
+    # Attempt to query pycraigslist instances even if there's a connection error.
+    for i in range(4):
         try:
             yield from [
                 pycraigslist.housing.apa(site=site, area=area, filters=query_filter)
@@ -81,7 +82,11 @@ def yield_apa(site, areas):
             ]
             return
         except MaximumRequestsError:
-            pass
+            if i == 3:
+                # Raise error if error cannot be resolved in 3 attempts
+                raise MaximumRequestsError from MaximumRequestsError
+            # Wait a minute before reattempting query
+            time.sleep(60)
 
 
 def yield_apa_filters():

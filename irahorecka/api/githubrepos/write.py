@@ -2,9 +2,12 @@
 """
 
 import concurrent.futures
+import time
+
+from requests.exceptions import ConnectionError
 
 from github import Github
-from github.GithubException import RateLimitExceededException, UnknownObjectException
+from github.GithubException import UnknownObjectException
 
 from irahorecka.models import db, GitHubRepo, RepoLanguage
 
@@ -28,13 +31,12 @@ LANGUAGE_COLOR = {
 
 def write_github_repos(github_token):
     """Write `GITHUB_TOKEN` user's GitHub repos to database."""
+    # Fetch repos first to allow fastest write to db.
+    repos = fetch_repos(github_token)
     # Drop content in tables - don't bother updating as hard reset for a small
     # table like this is preferable.
     RepoLanguage.query.delete()
     GitHubRepo.query.delete()
-    # Fetch repos first to allow fastest write to db.
-    repos = fetch_repos(github_token)
-    # Don't write to database if repos fetch failed.
     if not repos:
         return
     for repo in repos:
@@ -60,13 +62,18 @@ def write_github_repos(github_token):
 
 def fetch_repos(access_token):
     """Entry point function to fetch GitHub user's repos (via access token)."""
-    try:
-        user = Github(access_token).get_user()
-    except RateLimitExceededException:
-        # Throttled access to GitHub's API
-        return []
+    user = Github(access_token).get_user()
+    # Attempt to query pycraigslist instances even if there's a connection error.
     repos = user.get_repos()
-    return [repo for repo in map_threads(build_repo_dict, repos) if repo is not None]
+    for i in range(4):
+        try:
+            return [repo for repo in map_threads(build_repo_dict, repos) if repo is not None]
+        except ConnectionError:
+            if i == 3:
+                # Raise error if error cannot be resolved in 3 attempts
+                raise ConnectionError from ConnectionError
+            # Wait a minute before reattempting query
+            time.sleep(60)
 
 
 def map_threads(func, _iterable):

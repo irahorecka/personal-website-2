@@ -1,5 +1,7 @@
 """
 """
+import os
+from functools import partial
 
 from irahorecka.api.craigslisthousing.read.posts import read_craigslist_housing
 from irahorecka.api.craigslisthousing.read.neighborhood import read_neighborhoods
@@ -19,3 +21,4 @@ AREA_KEY = {
     "santa cruz co": "scz",
     "city of san francisco": "sfc",
 }
+write_github_repos = partial(write_github_repos, os.environ.get("GITHUB_TOKEN"))

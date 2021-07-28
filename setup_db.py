@@ -1,16 +1,22 @@
 import os
-import time
+import traceback
 
 from irahorecka import create_app
-import irahorecka.api as api
-from irahorecka.models import db
+from scripts.db import setup
+from scripts.mail import write_email
 
 app = create_app()
-with app.app_context():
-    t0 = time.time()
-    db.create_all()
-    api.write_github_repos(os.environ.get("GITHUB_TOKEN"))
-    api.write_craigslist_housing(site="sfbay", areas=["eby", "nby", "sby", "sfc", "pen", "scz"])
-    api.clean_craigslist_housing()
-    api.write_craigslist_housing_score(site="sfbay", areas=["eby", "nby", "sby", "sfc", "pen", "scz"])
-    print(f"Execution time: {'%.2f' % ((time.time() - t0) / 60)} min")
+
+if __name__ == "__main__":
+    # Validate environment variable keys
+    env_vars = ["EMAIL_USER", "EMAIL_PASS", "SECRET_KEY", "SQLALCHEMY_DATABASE_URI", "GITHUB_TOKEN"]
+    for var in env_vars:
+        os.environ[var]
+    try:
+        setup(app)
+    except Exception:
+        write_email(
+            "An exception occurred in 'setup_db.py'",
+            "An exception occurred during database setup in 'setup_db.py'. Check error message below.",
+            code=str(traceback.format_exc()),
+        )
