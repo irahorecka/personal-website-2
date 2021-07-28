@@ -5,7 +5,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-def write_email(subject, body, code=""):
+def write_email(sender_email, sender_pass, subject, body, code=""):
     """Main function to construct email sender, recipients, and content for
     new craigslist housing posts."""
     # Add new posts to Email object in text and markup format
@@ -14,14 +14,14 @@ def write_email(subject, body, code=""):
         Code: {code}
         """
     html_content = f"""
-        <p>{subject}</p>
-        <code>{body}</code>"""
-    mail = Email(content, html_content, "An exception was repeatedly raised.")
+        <p>{body}</p>
+        <code>{code}</code>"""
+    mail = Email(content, html_content)
 
     # Add Email metadata
     metadata = EmailMetadata()
-    metadata.sender_email = os.environ.get("EMAIL_USER")
-    metadata.sender_password = os.environ.get("EMAIL_PASS")
+    metadata.sender_email = sender_email
+    metadata.sender_password = sender_pass
     metadata.receiver_email = "ira.horecka@yahoo.com"
     metadata.subject = subject
     metadata.construct_MIME()
@@ -57,10 +57,9 @@ class EmailMetadata:
 class Email:
     """Construct email body from new posts."""
 
-    def __init__(self, content, html_content="", intro=""):
+    def __init__(self, content, html_content=""):
         self.text_body = content
         self.html_body = html_content
-        self.intro = intro
 
     def get_markup(self):
         """Concatenate self.text_body and self.html_body in markup format for email."""
@@ -71,7 +70,6 @@ class Email:
             <html>
             <body>
                 <p>
-                {self.intro}
                 {self.html_body}
                 </p>
             </body>
