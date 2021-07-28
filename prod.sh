@@ -8,12 +8,13 @@ cd personal-website-2-prod;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
-rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml .gitignore LICENSE Makefile README.md prod.sh;
-rm -rf .git node_modules;
+rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml .gitignore LICENSE Makefile README.md prod.sh *.ipynb *.db;
+rm -rf node_modules;
 # Remove extraneous files in project directory
 cd ./irahorecka;
 rm ./templates/_tailwind_purge.html;
 find . -type d -name "__pycache__" | xargs rm -r;
+find . -type d -name ".ipynb_checkpoints" | xargs rm -r;
 find . -type d -name "archive" | xargs rm -rf;
 find . -type d -name "src" | xargs rm -rf;
 find . -type d -name ".webassets-cache" | xargs rm -rf;

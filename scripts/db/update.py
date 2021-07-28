@@ -1,5 +1,3 @@
-import os
-
 import irahorecka.api as api
 
 
