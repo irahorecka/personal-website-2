@@ -6,12 +6,12 @@
     <meta name="description" content="Ira Horecka's website">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
     <link rel="icon" href="{{ url_for('static', filename="images/hand-lizard-o.png") }}" title="GitHub">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/tailwind-cards.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/cards.css') }}">
     {% assets 'css' -%}
     <link rel="stylesheet" href="{{ ASSET_URL }}">
     {%- endassets %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/nav.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/style.css') }}">
     <script src="{{ url_for('static', filename="external/jquery-3.5.1.min.js") }}"></script>
     {%- block js -%}
     {%- endblock js -%}
@@ -34,7 +34,7 @@
         </div>
       </nav>
     </header>
-    <div class="container px-8 pt-8 pb-16 mt-0 lg:mt-16 flex flex-col lg:flex-row lg:m-auto">
+    <div class="container px-8 pt-8 pb-16 m-auto mt-0 lg:mt-16 flex flex-col lg:flex-row">
       <div class="flex flex-row lg:flex-col content-between w-32 lg:w-48 mt-0 lg:mr-16">
         <img src="{{ url_for('static', filename=['images/{}'.format(content.profile_img)]) }}" class="p-1 border-1 w-32 xl:w-48 h-32 xl:h-48 rounded-full shadow-lg">
         <div class="text-left text-base m-auto lg:mt-9 ml-6 lg:ml-2">

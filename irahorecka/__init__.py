@@ -13,7 +13,7 @@ from flask_sqlalchemy import SQLAlchemy
 from irahorecka.config import Config
 
 db = SQLAlchemy()
-css = Bundle("src/main.css", output="dist/main.css", filters="postcss")
+css = Bundle("css/src/main.css", output="css/dist/main.css", filters="postcss")
 
 
 def create_app(config_class=Config):
