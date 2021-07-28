@@ -9,3 +9,4 @@ pycraigslist
 numpy
 requests
 psycopg2-binary
+uwsgi
