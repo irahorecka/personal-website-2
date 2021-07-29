@@ -3,8 +3,8 @@
 
 # ----- Make copy of root directory -----
 cd ../;
-cp -rf ./personal-website-2 ./personal-website-2-production;
-cd personal-website-2-production;
+cp -rf ./personal-website-2 ./personal-website;
+cd personal-website;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
@@ -28,9 +28,3 @@ mv ./prod/irahorecka/__init__.py ./irahorecka/__init__.py;
 mv ./prod/irahorecka/templates/layout.html ./irahorecka/templates/layout.html;
 mv ./prod/irahorecka/config.py ./irahorecka/config.py;
 rm -rf ./prod;
-
-# ----- Fianlly, rename and zip production folder and remove production dir -----
-cd ../;
-mv ./personal-website-2-production ./personal-website
-zip -r9 personal-website.zip ./personal-website;
-rm -rf ./personal-website;
