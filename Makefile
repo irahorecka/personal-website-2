@@ -16,5 +16,8 @@ pre-commit: ## Install and autoupdate pre-commit
 clean: ## Remove pycache
 	find . -type d -name "__pycache__" | xargs rm -r;
 
+minify: ## Minify all .css and .js files
+	bash ./minify-css-js.sh
+
 production: ## Build production web folder
 	bash ./prod.sh;

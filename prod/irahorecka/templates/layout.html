@@ -6,10 +6,10 @@
     <meta name="description" content="Ira Horecka's website">
     <meta name='viewport' content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0'>
     <link rel="icon" href="{{ url_for('static', filename="images/hand-lizard-o.png") }}" title="GitHub">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/cards.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/main.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/nav.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/cards.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/main.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/nav.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dist/style.min.css') }}">
     <!-- App icons for mobile -->
     <link rel="apple-touch-icon" sizes="57x57" href="{{ "/images/app-icons/57.png"|url }}">
     <link rel="apple-touch-icon" sizes="72x72" href="{{ "/images/app-icons/72.png"|url }}">
@@ -26,7 +26,7 @@
     {%- endblock js -%}
     <script defer src="{{ url_for('static', filename="external/iconify-1.0.7.min.js") }}"></script>
     <script defer src="{{ url_for('static', filename="external/headroom-0.9.4.min.js") }}"></script>
-    <script defer src="{{ url_for('static', filename="js/nav.js") }}"></script>
+    <script defer src="{{ url_for('static', filename="js/nav.min.js") }}"></script>
     <title>Ira Horecka | {{ content.title }}</title>
   </head>
   <body class="bg-white font-sans">
