@@ -8,7 +8,7 @@ cd personal-website;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
-rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml .gitignore LICENSE Makefile README.md prod.sh *.ipynb *.db;
+rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh *.ipynb *.db;
 rm -rf .git node_modules;
 # Remove extraneous files in project directory
 cd ./irahorecka;
