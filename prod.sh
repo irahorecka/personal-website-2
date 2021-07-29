@@ -8,8 +8,8 @@ cd personal-website;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
-rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh *.ipynb *.db;
-rm -rf .git node_modules;
+rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh minify-css-js.sh *.ipynb *.db;
+rm -rf .git ./node_modules ./scripts/bash;
 # Remove extraneous files in project directory
 cd ./irahorecka;
 rm ./templates/_tailwind_purge.html;
@@ -28,3 +28,8 @@ mv ./prod/irahorecka/__init__.py ./irahorecka/__init__.py;
 mv ./prod/irahorecka/templates/layout.html ./irahorecka/templates/layout.html;
 mv ./prod/irahorecka/config.py ./irahorecka/config.py;
 rm -rf ./prod;
+
+# Finally, sync contents to pweb2 and remove temp personal-website folder
+rsync -a . ../pweb2;
+cd ../;
+rm -rf ./personal-website;
