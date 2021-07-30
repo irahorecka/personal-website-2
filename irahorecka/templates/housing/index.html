@@ -56,12 +56,18 @@
 {% block script %}
 <script type="text/javascript">
 var $loading = $('#loadingDiv').hide();
+var firstSwap = true;
+document.body.addEventListener('htmx:afterSwap', function(evt) {
+    if (firstSwap === true) {
+      // Select neighborhood option at random upon page load
+      var select = document.getElementById('neighborhood');
+      var items = select.getElementsByTagName('option');
+      var index = Math.floor(Math.random() * items.length);
+      select.selectedIndex = index;
+      firstSwap = false;
+    }
+});
 $(document).ready(function() {
-  // Select neighborhood option at random upon page load
-  var select = document.getElementById('neighborhood');
-  var items = select.getElementsByTagName('option');
-  var index = Math.floor(Math.random() * items.length);
-  select.selectedIndex = index;
   // Show load icon during ajax call
   $("#query, #query-score").click(function(e) {
     e.preventDefault();
