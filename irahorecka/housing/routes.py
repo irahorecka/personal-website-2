@@ -5,7 +5,6 @@ Ira Horecka - July 2021
 
 #
 """
-import random
 from datetime import datetime
 
 from flask import jsonify, render_template, request, Blueprint
