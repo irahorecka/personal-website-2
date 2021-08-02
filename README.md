@@ -1,4 +1,4 @@
-# personal-website-2
+# pweb2-dev
 Second iteration of my personal website.
 
 ## Useful resources for future dev:
