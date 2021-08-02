@@ -3,12 +3,12 @@
 
 # ----- Make copy of root directory -----
 cd ../;
-cp -rf ./personal-website-2 ./personal-website;
-cd personal-website;
+cp -rf ./pweb2-dev ./pweb2-temp;
+cd pweb2-temp;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
-rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh minify-css-js.sh *.ipynb *.db;
+rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh;
 rm -rf .git ./node_modules ./scripts/bash;
 # Remove extraneous files in project directory
 cd ./irahorecka;
@@ -29,7 +29,7 @@ mv ./prod/irahorecka/templates/layout.html ./irahorecka/templates/layout.html;
 mv ./prod/irahorecka/config.py ./irahorecka/config.py;
 rm -rf ./prod;
 
-# Finally, sync contents to pweb2 and remove temp personal-website folder
+# Finally, sync contents to pweb2 and remove pweb2-temp folder
 rsync -a . ../pweb2;
 cd ../;
-rm -rf ./personal-website;
+rm -rf ./pweb2-temp;
