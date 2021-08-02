@@ -13,4 +13,4 @@ port: 5000
 debug: true
 
 # GitHub repositories to display in /projects page
-github-repos: ['pycraigslist', 'youtube2audio', 'actransit-map', 'visuaudio', 'jupyterblack', 'astree', 'soil-moisture-display', 'personal-website-2']
+github-repos: ['pycraigslist', 'youtube2audio', 'actransit-map', 'visuaudio', 'jupyterblack', 'astree', 'soil-moisture-display', 'pweb2']
