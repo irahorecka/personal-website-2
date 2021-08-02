@@ -1,5 +1,8 @@
 """
-Scrape every zipcode for these counties:
+/irahorecka/api/craigslisthousing/archive/scrape_zip.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Scrapes every zipcode for these counties:
 santa clara
 santa cruz
 san mateo

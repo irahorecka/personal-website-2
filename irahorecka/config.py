@@ -1,4 +1,7 @@
 """
+/irahorecka/config.py
+
+Module to store Flask configurations.
 """
 
 import os

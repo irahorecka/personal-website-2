@@ -1,6 +1,11 @@
 """
-Writes neighborhoods to file
+/irahorecka/api/craigslisthousing/archive/neighborhood.py
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Module to write neighborhoods to JSON file.
 """
+
+# Bad paths
 from irahorecka.api.craigslisthousing.utils import open_json, write_json, NEIGHBORHOOD_PATH
 
 

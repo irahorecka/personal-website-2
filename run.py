@@ -1,7 +1,6 @@
 """
 /run.py
-Ira Horecka - July 2021
-~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~
 
 Starts a Flask web application instance.
 """
@@ -21,11 +20,11 @@ if __name__ == "__main__":
         config = yaml.safe_load(config_file)
 
     if config["localhost"]:
-        # If you want to host purely locally with ability to use subdomain
+        # If you want to host purely locally with ability to use subdomain.
         application.config["SERVER_NAME"] = f"localhost:{config['port']}"
         application.run(debug=config["debug"])
     else:
-        # Allows access to web page via other devices on the same network
+        # Allows access to web page via other devices on the same network.
         try:
             application.run(host=config["local-ip"]["mac"], port=config["port"], debug=config["debug"])
         except OSError:
