@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
-# ~~~~~ Execute bash script from project root directory ~~~~~
+# NOTE: Execute bash script from project root directory
 
 # ----- Make copy of root directory -----
 cd ../;
 cp -rf ./pweb2-dev ./pweb2-temp;
 cd pweb2-temp;
+
+# ----- Execute shell scripts prior to manipulating folders and files -----
+bash ./scripts/bash/minify_layout.sh;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
