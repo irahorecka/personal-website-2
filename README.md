@@ -15,5 +15,8 @@ Second iteration of my personal website.
 ## Things to note
 You'll notice there's a `/prod` directory. This directory contains files that are configured for a production environment. If you need to make changes to files found in `/prod` outside of `/prod`, make sure to also sync up the matching file in `/prod`. The `/prod` directory will be removed when migrating pweb2-dev to pweb2 via `/prod.sh`.
 
+## Troubleshooting
+When executing `postcss` through the command line you'll sometime receive an error stating a missing `async` javascript library. The best way to alleviate fix this is to delete `/node_modules` and run `npm install`. This should recreate the `/node_modules` directory and `postcss` should work.
+
 ## Useful resources:
 - [Rapid prototyping with Flask and Tailwind CSS](https://testdriven.io/blog/flask-htmx-tailwind/)
