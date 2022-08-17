@@ -15,6 +15,7 @@ pre-commit: ## Install and autoupdate pre-commit
 
 clean: ## Remove pycache
 	find . -type d -name "__pycache__" | xargs rm -r;
+	find . -type f -name ".DS_Store" | xargs rm -r;
 
 minify: ## Minify all .css and .js files
 	bash ./scripts/bash/minify-css-js.sh
