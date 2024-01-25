@@ -11,7 +11,7 @@ bash ./scripts/bash/minify-layout.sh;
 
 # ----- Remove files and folders -----
 # Remove config and npm files/folders from root directory
-rm package-lock.json package.json postcss.config.js tailwind.config.js .pre-commit-config.yaml LICENSE Makefile README.md prod.sh;
+rm package-lock.json package.json postcss.config.js tailwind.config.js LICENSE Makefile README.md prod.sh;
 rm -rf .git ./node_modules ./scripts/bash;
 # Remove extraneous files in project directory
 cd ./irahorecka;

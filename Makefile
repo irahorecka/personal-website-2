@@ -9,10 +9,6 @@ flake: ## Flake8 every python file
 pylint: ## Pylint every python file
 	find . -type f -name "*.py" -a | xargs pylint;
 
-pre-commit: ## Install and autoupdate pre-commit
-	pre-commit install;
-	pre-commit autoupdate;
-
 clean: ## Remove pycache
 	find . -type d -name "__pycache__" | xargs rm -r;
 	find . -type f -name ".DS_Store" | xargs rm -r;
